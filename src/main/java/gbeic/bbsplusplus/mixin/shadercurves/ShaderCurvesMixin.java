@@ -194,7 +194,7 @@ public class ShaderCurvesMixin
     private static void removeIrrelevantVariables(String source, Map<String, ShaderCurves.ShaderVariable> variables)
     {
         List<String> filter = BBSRendering.getShadersSliderOptions();
-        Set<String> parsedNames = new HashSet<>(variables.keySet());
+        Set<String> parsedNames = ShaderCurveDebug.isShaderCurvePatches() ? new HashSet<>(variables.keySet()) : Collections.emptySet();
         Set<String> validNames = new HashSet<>();
 
         // 只保留光影设置里真的存在滑条、且不在黑名单中的参数
@@ -215,11 +215,9 @@ public class ShaderCurvesMixin
             return false;
         });
 
-        Set<String> constBacked = bbspp$findConstBackedVariables(source, validNames);
-
         if (validNames.isEmpty())
         {
-            bbspp$logSourceSelection(source, parsedNames, validNames, constBacked, Collections.emptySet(), variables.keySet());
+            bbspp$logSourceSelection(source, parsedNames, validNames, Collections.emptySet(), variables.keySet());
 
             return;
         }
@@ -274,7 +272,7 @@ public class ShaderCurvesMixin
 
         variables.keySet().removeAll(toRemove);
 
-        bbspp$logSourceSelection(source, parsedNames, validNames, constBacked, toRemove, variables.keySet());
+        bbspp$logSourceSelection(source, parsedNames, validNames, toRemove, variables.keySet());
     }
 
     /**
@@ -496,7 +494,6 @@ public class ShaderCurvesMixin
         String source,
         Set<String> parsedNames,
         Set<String> sliderNames,
-        Set<String> constBacked,
         Set<String> preprocessorBacked,
         Collection<String> finalNames
     )
@@ -513,6 +510,7 @@ public class ShaderCurvesMixin
             return;
         }
 
+        Set<String> constBacked = bbspp$findConstBackedVariables(source, sliderNames);
         Set<String> notSlider = new HashSet<>(parsedNames);
 
         notSlider.removeAll(sliderNames);
