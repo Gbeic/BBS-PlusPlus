@@ -1,0 +1,12 @@
+{
+    "required": false,
+    "package": "gbeic.bbsplusplus.mixin.xavin",
+    "plugin": "gbeic.bbsplusplus.compat.XavinMixinPlugin",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "XavinClientMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 0
+    }
+}

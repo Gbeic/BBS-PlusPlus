@@ -109,6 +109,12 @@ public final class VFXDestructionWandSelection
         return isHoldingWand(client) && client.currentScreen == null;
     }
 
+    /** 只有手持破坏魔杖时才显示破坏盒预览边框。 */
+    public static boolean shouldRenderSelection(MinecraftClient client)
+    {
+        return isHoldingWand(client);
+    }
+
     public static boolean isDestructionWand(ItemStack stack)
     {
         return stack != null && DESTRUCTION_WAND.equals(Registries.ITEM.getId(stack.getItem()));
@@ -400,7 +406,7 @@ public final class VFXDestructionWandSelection
     {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (!isHoldingWand(client))
+        if (!shouldRenderSelection(client))
         {
             return;
         }
