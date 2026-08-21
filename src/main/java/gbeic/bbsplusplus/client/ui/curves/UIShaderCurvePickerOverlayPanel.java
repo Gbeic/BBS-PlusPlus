@@ -3,6 +3,8 @@ package gbeic.bbsplusplus.client.ui.curves;
 import gbeic.bbsplusplus.client.compat.iris.SafeShaderLanguageMap;
 import gbeic.bbsplusplus.client.compat.iris.ShaderCurveState;
 import gbeic.bbsplusplus.compat.IrisCompat;
+import gbeic.bbsplusplus.compat.irlite.IrliteCompat;
+import gbeic.bbsplusplus.compat.irlite.IrliteShaderCurveBridge;
 import mchorse.bbs_mod.BBSSettings;
 import mchorse.bbs_mod.camera.clips.misc.CurveClip;
 import mchorse.bbs_mod.l10n.L10n;
@@ -96,6 +98,9 @@ public class UIShaderCurvePickerOverlayPanel extends UIOverlayPanel
         TreeNode root = new TreeNode(null, "", UIKeys.CAMERA_PANELS_PICK_KEY.get());
         Map<String, String> languageMap = SafeShaderLanguageMap.collect();
 
+        // 兜底：reset 早于 IRLite 字段赋值时，确保 IRLite 参数已注入变量表
+        IrliteShaderCurveBridge.ensureRegistered();
+
         for (ShaderCurves.ShaderVariable variable : ShaderCurves.variableMap.values())
         {
             String channelId = CurveClip.SHADER_CURVES_PREFIX + variable.name;
@@ -104,7 +109,13 @@ public class UIShaderCurvePickerOverlayPanel extends UIOverlayPanel
             List<String> groups = new ArrayList<>();
             String title = variable.name;
 
-            if (path != null && !path.isBlank())
+            // IRLite 迁进 BBS 设置的参数没有 Iris 的 option.* 语言路径，按参数名归到独立分组
+            if (IrliteCompat.isLoaded() && IrliteShaderCurveBridge.isIrLiteVariable(variable.name))
+            {
+                groups.addAll(IrliteShaderCurveBridge.categoryOf(variable.name));
+                title = IrliteShaderCurveBridge.displayName(variable.name);
+            }
+            else if (path != null && !path.isBlank())
             {
                 List<String> parts = splitPath(path);
 

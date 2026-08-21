@@ -4,6 +4,8 @@ import gbeic.bbsplusplus.BBSAddonsSettings;
 import gbeic.bbsplusplus.client.compat.iris.SafeShaderLanguageMap;
 import gbeic.bbsplusplus.client.compat.iris.ShaderCurveState;
 import gbeic.bbsplusplus.client.ui.curves.UIShaderCurvePickerOverlayPanel;
+import gbeic.bbsplusplus.compat.irlite.IrliteCompat;
+import gbeic.bbsplusplus.compat.irlite.IrliteShaderCurveBridge;
 import mchorse.bbs_mod.camera.clips.misc.CurveClip;
 import mchorse.bbs_mod.l10n.L10n;
 import mchorse.bbs_mod.l10n.keys.IKey;
@@ -88,6 +90,13 @@ public abstract class UICurveClipMixin
         if (channelId.startsWith(CurveClip.SHADER_CURVES_PREFIX))
         {
             String option = channelId.substring(CurveClip.SHADER_CURVES_PREFIX.length());
+
+            // IRLite 迁进 BBS 设置的参数没有 Iris 的 option.* 语言路径，用可读名 + 原始 ID
+            if (IrliteCompat.isLoaded() && IrliteShaderCurveBridge.isIrLiteVariable(option))
+            {
+                return IKey.constant(IrliteShaderCurveBridge.displayName(option) + " (" + option + ")");
+            }
+
             String localized = bbspp$findShaderOptionName(option);
 
             return IKey.constant(localized == null ? option : localized + " (" + option + ")");
