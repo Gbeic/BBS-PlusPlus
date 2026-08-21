@@ -2,6 +2,7 @@ package gbeic.bbsplusplus.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import gbeic.bbsplusplus.forms.VideoBillboardForm;
+import mchorse.bbs_mod.BBSSettings;
 import mchorse.bbs_mod.forms.ITickable;
 import mchorse.bbs_mod.forms.entities.IEntity;
 import mchorse.bbs_mod.forms.renderers.FormRenderType;
@@ -52,10 +53,25 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
     @Override
     public void renderInUI(UIContext context, int x1, int y1, int x2, int y2)
     {
-        int cx = (x1 + x2) / 2;
-        int cy = (y1 + y2) / 2;
+        int width = Math.max(1, x2 - x1);
+        int height = Math.max(1, y2 - y1);
+        int available = Math.min(width, height);
+        int iconSize = Math.min(available, Math.max(24, Math.min(64, available / 3)));
+        int iconX = x1 + (width - iconSize) / 2;
+        int iconY = y1 + (height - iconSize) / 2;
 
-        context.batcher.icon(Icons.FILM, Colors.WHITE, cx, cy, 1F, 1F);
+        var icon = Icons.FILM;
+        var texture = context.render.getTextures().getTexture(icon.texture);
+
+        if (texture != null)
+        {
+            int color = BBSSettings.isLightTheme() ? Colors.A100 : Colors.WHITE;
+
+            context.batcher.texturedBox(texture, color, iconX, iconY, iconSize, iconSize,
+                icon.x, icon.y, icon.x + icon.w, icon.y + icon.h, icon.textureW, icon.textureH);
+        }
+
+        context.batcher.text(this.form.getDefaultDisplayName(), x1 + 4, y2 - 12, Colors.WHITE);
     }
 
     @Override
