@@ -230,5 +230,11 @@
     "bbspp.ui.pose.parameter_brush_tooltip": "Bone Parameter Brush\n\nWith one bone selected, click any target bone in the list or model viewport to paste. With multiple bones selected, switch to a target pose keyframe and use this button to paste by bone name. The brush exits after a successful paste; press Esc to cancel. An orange diamond \n\nmarks an edit; a gray slashed diamond skips this bone in the current keyframe. Click the diamond to toggle",
     "bbspp.ui.pose.parameter_brush_batch_source": "%s bones copied\n\nSwitch to a target pose keyframe of the same model, then click here to paste by bone name; press Esc to cancel",
     "bbspp.ui.pose.parameter_brush_batch_paste": "Paste %s bones\n\nWrite them by bone name to the currently selected compatible pose keyframes, then exit the brush",
-    "bbspp.ui.pose.parameter_brush_cancel": "Cancel bone parameter brush"
+    "bbspp.ui.pose.parameter_brush_cancel": "Cancel bone parameter brush",
+    "bbspp.ui.video_settings.presets": "BBS++ Video Presets",
+    "bbspp.ui.video_settings.presets.refresh": "Refresh presets",
+    "bbspp.ui.video_settings.presets.rename": "Rename preset",
+    "bbspp.ui.video_settings.presets.rename_description": "Enter the new preset name:",
+    "bbspp.ui.video_settings.presets.delete": "Delete preset",
+    "bbspp.ui.video_settings.presets.delete_description": "Delete preset \"%s\"?"
 }

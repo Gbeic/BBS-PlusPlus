@@ -231,6 +231,12 @@
     "bbspp.ui.pose.parameter_brush_batch_source": "已复制 %s 根骨骼\n\n切换到同一模型的目标姿势关键帧后，点击此处按骨骼名称批量粘贴；Esc取消",
     "bbspp.ui.pose.parameter_brush_batch_paste": "批量粘贴 %s 根骨骼\n\n按骨骼名称写入当前选中的兼容姿势关键帧，成功后自动退出",
     "bbspp.ui.pose.parameter_brush_cancel": "取消骨骼参数刷",
+    "bbspp.ui.video_settings.presets": "BBS++ 视频预设",
+    "bbspp.ui.video_settings.presets.refresh": "刷新预设",
+    "bbspp.ui.video_settings.presets.rename": "重命名预设",
+    "bbspp.ui.video_settings.presets.rename_description": "输入新的预设名称：",
+    "bbspp.ui.video_settings.presets.delete": "删除预设",
+    "bbspp.ui.video_settings.presets.delete_description": "确定要删除预设“%s”吗？",
     
     "bbspp.keyframe_format_tip": "【自定义轨道名称模板】将上方 bbspp.keyframe. 开头的键复制到此处并修改值即可覆盖默认翻译。例如：",
     "bbspp.keyframe.x": "X",

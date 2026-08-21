@@ -6,6 +6,7 @@
         "BBSModMixin",
         "BBSRenderingMixin",
         "BBSSettingsMixin",
+        "UISettingsVideoPresetMixin",
         "WindowClipboardMixin",
         "UIUndoListMixin",
         "UIOverlayUndoHistoryMixin",
