@@ -1,6 +1,6 @@
 # BBS++
 
-> 由Gbeic发起的BBSFS功能增强插件，自用顺带分享给大家
+> [BBSFS](https://github.com/Wemppy4/bbs-fs) 功能增强插件
 
 <div>
   <img src="docs/AAA.png" width="1000">
