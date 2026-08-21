@@ -41,10 +41,10 @@ public class KeyframeLocalizer
         cn("bodyYaw", "体偏航");
 
         /* 状态 */
-        cn("sneaking", "潜行");
-        cn("sprinting", "冲刺");
-        cn("grounded", "落地");
-        cn("damage", "受伤");
+        cn("sneaking", "潜行状态");
+        cn("sprinting", "疾跑状态");
+        cn("grounded", "落地状态");
+        cn("damage", "受伤状态");
 
         /* 手柄摇杆 */
         cn("stick_lx", "左摇杆 X");
