@@ -1,0 +1,12 @@
+{
+    "structure_stick_drag": {
+        "sounds": [
+            "bbspp:structure_stick_drag"
+        ]
+    },
+    "structure_stick_export": {
+        "sounds": [
+            "bbspp:structure_stick_export"
+        ]
+    }
+}

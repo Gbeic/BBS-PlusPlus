@@ -1,0 +1,42 @@
+{
+    "block.bbs.emissive_chroma_red": "发光红色色度方块",
+    "block.bbs.emissive_chroma_green": "发光绿色色度方块",
+    "block.bbs.emissive_chroma_blue": "发光蓝色色度方块",
+    "block.bbs.emissive_chroma_cyan": "发光青色色度方块",
+    "block.bbs.emissive_chroma_magenta": "发光品红色色度方块",
+    "block.bbs.emissive_chroma_yellow": "发光黄色色度方块",
+    "block.bbs.emissive_chroma_black": "发光黑色色度方块",
+    "block.bbs.emissive_chroma_white": "发光白色色度方块",
+
+    "item.bbs.structure_stick": "结构棒",
+
+    "bbsplusplus.structure_stick.selected": "结构棒：已选择区域",
+    "bbsplusplus.structure_stick.reselected": "结构棒：已重新选择区域",
+    "bbsplusplus.structure_stick.cleared": "结构棒：已清除区域",
+    "bbsplusplus.structure_stick.start_moved": "结构棒：已修改起点",
+    "bbsplusplus.structure_stick.end_moved": "结构棒：已修改终点",
+    "bbsplusplus.structure_stick.no_selection": "结构棒：没有选择区域",
+    "bbsplusplus.structure_stick.too_large": "结构棒：区域过大或无效",
+    "bbsplusplus.structure_stick.no_permission": "结构棒：没有权限保存结构",
+    "bbsplusplus.structure_stick.save_failed": "结构棒：保存失败",
+    "bbsplusplus.structure_stick.saved": "结构棒：已保存 structures/%s.nbt",
+
+    "bbsplusplus.structure_stick.save_title": "保存结构",
+    "bbsplusplus.structure_stick.save_name": "结构名称",
+    "bbsplusplus.structure_stick.save": "保存",
+    "bbsplusplus.structure_stick.save_default": "默认保存",
+
+    "bbsplusplus.structure_stick.tip.hold": "长按",
+    "bbsplusplus.structure_stick.tip.drag": "拖出一片区域",
+    "bbsplusplus.structure_stick.tip.export": "导出为结构",
+    "bbsplusplus.structure_stick.tip.clear": "删除区域",
+
+    "bbsplusplus.vfx_wand.selected": "破坏魔杖：已选择区域",
+    "bbsplusplus.vfx_wand.cleared": "破坏魔杖：已清除区域",
+    "bbsplusplus.vfx_wand.start_moved": "破坏魔杖：已修改起点",
+    "bbsplusplus.vfx_wand.end_moved": "破坏魔杖：已修改终点",
+    "bbsplusplus.vfx_wand.tip.drag": "长按拖出破坏区域",
+    "bbsplusplus.vfx_wand.tip.start": "短按移动起点",
+    "bbsplusplus.vfx_wand.tip.end": "短按移动终点",
+    "bbsplusplus.vfx_wand.tip.clear": "长按清除区域"
+}

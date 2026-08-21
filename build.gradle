@@ -1,0 +1,142 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+}
+
+base {
+    archivesName = archives_base_name
+}
+
+version = mod_version
+group = mod_group_id
+
+processResources {
+    inputs.properties(
+        version: mod_version,
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_license: mod_license,
+        minecraft_version_range: minecraft_version_range,
+        loader_version_range: loader_version_range,
+        java_version_range: java_version_range
+    )
+
+    filesMatching("fabric.mod.json") {
+        expand(
+            version: mod_version,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_license: mod_license,
+            minecraft_version_range: minecraft_version_range,
+            loader_version_range: loader_version_range,
+            java_version_range: java_version_range
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+    maven {
+        name = "Gegy"
+        url = "https://maven.gegy.dev/"
+    }
+    maven {
+        name = "Fuzs Mod Repository"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+
+    // Fabric API（提供 ClientTickEvents、ClientLifecycleEvents 等）
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.91.0+1.20.1"
+
+    // 引用 BBS 2.4（来自 Modrinth），编译期解析 Mixin 目标类
+    modCompileOnly "maven.modrinth:bbs-fs:2.4-1.20.1"
+
+    // Iris 光影（仅编译期）：光影曲线相关 Mixin 需要引用 Iris 的类，运行时没装 Iris 也不会加载这些注入
+    modCompileOnly "maven.modrinth:iris:1.7.0+1.20.1"
+
+    // AAA Particles 依赖
+    modImplementation "maven.modrinth:aaa-particles:fabric-1.20.1-2.2.0"
+    modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:8.0.0"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = java_version as int
+    it.options.encoding = 'UTF-8'
+}
+
+loom {
+    runs {
+        client {
+            vmArg "-Dsodium.checks.issue2561=false"
+        }
+    }
+}
+
+// 私有扩展存在时加载本地开发联动；公开环境没有该目录，不会产生任何依赖。
+def bbspppDevScript = file("private/BBSPPP/bbsplusplus-dev.gradle")
+def mediaPlayerDevScript = file("private/MediaPlayer-BBS/bbsplusplus-dev.gradle")
+
+if (bbspppDevScript.exists()) {
+    apply from: bbspppDevScript
+}
+
+if (mediaPlayerDevScript.exists()) {
+    apply from: mediaPlayerDevScript
+}
+
+def privateDevRuntimeMods = [
+        [
+                buildTask: "buildBbspppDevRuntime",
+                runTask: "runClientWithbbspppBuild",
+                displayName: "BBSPPP"
+        ],
+        [
+                buildTask: "buildMediaPlayerDevRuntime",
+                runTask: "runClientWithMediaPlayerBuild",
+                displayName: "MediaPlayer-BBS"
+        ]
+].findAll { tasks.findByName(it.buildTask) != null }
+
+def privateDevRuntimeBuildTasks = privateDevRuntimeMods.collect { it.buildTask }
+
+if (!privateDevRuntimeBuildTasks.isEmpty()) {
+    tasks.register("buildPrivateDevRuntime") {
+        group = "bbsplusplus"
+        description = "强制重建所有可用的 private mod 开发运行包。"
+        dependsOn privateDevRuntimeBuildTasks.collect { tasks.named(it) }
+    }
+
+    tasks.named("runClient") {
+        mustRunAfter tasks.named("buildPrivateDevRuntime")
+        privateDevRuntimeBuildTasks.each { buildTask ->
+            mustRunAfter tasks.named(buildTask)
+        }
+    }
+
+    privateDevRuntimeMods.each { mod ->
+        tasks.register(mod.runTask, GradleBuild) {
+            group = "fabric"
+            description = "强制重建 ${mod.displayName} 开发运行包，并在新的 Gradle 构建中启动客户端。"
+            dependsOn project.tasks.named(mod.buildTask)
+            dir = rootDir
+            tasks = ["runClient"]
+        }
+    }
+
+    tasks.register("runClientWithPrivateBuild", GradleBuild) {
+        group = "fabric"
+        description = "强制重建 private mod 开发运行包，并在新的 Gradle 构建中启动客户端。"
+        dependsOn project.tasks.named("buildPrivateDevRuntime")
+        dir = rootDir
+        tasks = ["runClient"]
+    }
+}

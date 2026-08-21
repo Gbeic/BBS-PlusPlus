@@ -1,0 +1,42 @@
+{
+    "block.bbs.emissive_chroma_red": "Glowing Chroma Red Block",
+    "block.bbs.emissive_chroma_green": "Glowing Chroma Green Block",
+    "block.bbs.emissive_chroma_blue": "Glowing Chroma Blue Block",
+    "block.bbs.emissive_chroma_cyan": "Glowing Chroma Cyan Block",
+    "block.bbs.emissive_chroma_magenta": "Glowing Chroma Magenta Block",
+    "block.bbs.emissive_chroma_yellow": "Glowing Chroma Yellow Block",
+    "block.bbs.emissive_chroma_black": "Glowing Chroma Black Block",
+    "block.bbs.emissive_chroma_white": "Glowing Chroma White Block",
+
+    "item.bbs.structure_stick": "Structure Stick",
+
+    "bbsplusplus.structure_stick.selected": "Structure Stick: area selected",
+    "bbsplusplus.structure_stick.reselected": "Structure Stick: area reselected",
+    "bbsplusplus.structure_stick.cleared": "Structure Stick: selection cleared",
+    "bbsplusplus.structure_stick.start_moved": "Structure Stick: start point moved",
+    "bbsplusplus.structure_stick.end_moved": "Structure Stick: end point moved",
+    "bbsplusplus.structure_stick.no_selection": "Structure Stick: no area selected",
+    "bbsplusplus.structure_stick.too_large": "Structure Stick: area too large or invalid",
+    "bbsplusplus.structure_stick.no_permission": "Structure Stick: no permission to save structures",
+    "bbsplusplus.structure_stick.save_failed": "Structure Stick: failed to save",
+    "bbsplusplus.structure_stick.saved": "Structure Stick: saved structures/%s.nbt",
+
+    "bbsplusplus.structure_stick.save_title": "Save Structure",
+    "bbsplusplus.structure_stick.save_name": "Structure name",
+    "bbsplusplus.structure_stick.save": "Save",
+    "bbsplusplus.structure_stick.save_default": "Save as Default",
+
+    "bbsplusplus.structure_stick.tip.hold": "Hold ",
+    "bbsplusplus.structure_stick.tip.drag": " to drag out an area",
+    "bbsplusplus.structure_stick.tip.export": " to export as a structure",
+    "bbsplusplus.structure_stick.tip.clear": " to delete the area",
+
+    "bbsplusplus.vfx_wand.selected": "Destruction Wand: area selected",
+    "bbsplusplus.vfx_wand.cleared": "Destruction Wand: selection cleared",
+    "bbsplusplus.vfx_wand.start_moved": "Destruction Wand: start point moved",
+    "bbsplusplus.vfx_wand.end_moved": "Destruction Wand: end point moved",
+    "bbsplusplus.vfx_wand.tip.drag": " hold to drag out a destruction area",
+    "bbsplusplus.vfx_wand.tip.start": " tap to move the start point",
+    "bbsplusplus.vfx_wand.tip.end": " tap to move the end point",
+    "bbsplusplus.vfx_wand.tip.clear": " hold to clear the area"
+}

@@ -1,0 +1,21 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "gbeic.bbsplusplus.mixin.shadercurves",
+    "plugin": "gbeic.bbsplusplus.compat.ShaderCurvesMixinPlugin",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "ShaderCurvesMixin",
+        "CustomUniformsSetupAccessor",
+        "CelestialUniformsMixin",
+        "IrisRenderingPipelineMixin",
+        "ShadowRendererMixin",
+        "CenterDepthSamplerMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "requireAnnotations": true
+    }
+}

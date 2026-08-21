@@ -1,0 +1,38 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "BBS++ 扩展功能插件 – 为 BBS 模组增添更多实用功能",
+    "authors": ["Gbeic"],
+    "contributors": ["WeiJinZhiBao (Shader Curves Fix, Structure Form)"],
+    "license": "${mod_license}",
+    "icon": "icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "main": [
+            "gbeic.bbsplusplus.BBSPlusPlusMod"
+        ],
+        "client": [
+            "gbeic.bbsplusplus.client.BBSPlusPlusModClient"
+        ]
+    },
+    "mixins": [
+        "bbsplusplus.mixins.json",
+        "bbsplusplus-irlite.mixins.json",
+        "bbsplusplus-shadercurves.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": "${loader_version_range}",
+        "minecraft": "${minecraft_version_range}",
+        "java": "${java_version_range}",
+        "bbs": "*"
+    },
+    "breaks": {
+        "aaa_particles": [
+            "<2.2.0",
+            ">2.2.1"
+        ],
+        "bbstools": "*"
+    }
+}
