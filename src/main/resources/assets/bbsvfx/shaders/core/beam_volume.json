@@ -1,0 +1,35 @@
+{
+	"blend": {
+		"func": "add",
+		"srcrgb": "one",
+		"dstrgb": "zero"
+	},
+	"vertex": "bbsvfx:beam_volume",
+	"fragment": "bbsvfx:beam_volume",
+	"attributes": ["Position", "UV0"],
+	"samplers": [
+		{ "name": "Sampler0" },
+		{ "name": "Sampler1" }
+	],
+	"uniforms": [
+		{ "name": "uInvProj", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+		{ "name": "uBase", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+		{ "name": "uAxis", "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
+		{ "name": "uTanU", "type": "float", "count": 3, "values": [ 1.0, 0.0, 0.0 ] },
+		{ "name": "uTanV", "type": "float", "count": 3, "values": [ 0.0, 0.0, 1.0 ] },
+		{ "name": "uLen", "type": "float", "count": 1, "values": [ 24.0 ] },
+		{ "name": "uRadius", "type": "float", "count": 1, "values": [ 0.6 ] },
+		{ "name": "uSoftness", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uOpacity", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uEmit", "type": "float", "count": 1, "values": [ 1.6 ] },
+		{ "name": "uHelixOn", "type": "int", "count": 1, "values": [ 1 ] },
+		{ "name": "uHelixCount", "type": "int", "count": 1, "values": [ 2 ] },
+		{ "name": "uHelixRadius", "type": "float", "count": 1, "values": [ 1.9 ] },
+		{ "name": "uHelixTurns", "type": "float", "count": 1, "values": [ 4.0 ] },
+		{ "name": "uHelixThickness", "type": "float", "count": 1, "values": [ 0.28 ] },
+		{ "name": "uHelixSpin", "type": "float", "count": 1, "values": [ 0.6 ] },
+		{ "name": "uTime", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uColor", "type": "float", "count": 3, "values": [ 1.0, 0.96, 0.78 ] },
+		{ "name": "uRim", "type": "float", "count": 3, "values": [ 1.0, 0.62, 0.16 ] }
+	]
+}

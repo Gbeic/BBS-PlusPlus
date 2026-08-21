@@ -1,0 +1,34 @@
+{
+	"blend": {
+		"func": "add",
+		"srcrgb": "one",
+		"dstrgb": "zero"
+	},
+	"vertex": "bbsvfx:wind_volume",
+	"fragment": "bbsvfx:wind_volume",
+	"attributes": ["Position", "UV0"],
+	"samplers": [
+		{ "name": "Sampler0" },
+		{ "name": "Sampler1" },
+		{ "name": "Sampler2" }
+	],
+	"uniforms": [
+		{ "name": "uInvProj", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+		{ "name": "uOrigin", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+		{ "name": "uUp", "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
+		{ "name": "uTanU", "type": "float", "count": 3, "values": [ 1.0, 0.0, 0.0 ] },
+		{ "name": "uTanV", "type": "float", "count": 3, "values": [ 0.0, 0.0, 1.0 ] },
+		{ "name": "uReach", "type": "float", "count": 1, "values": [ 48.0 ] },
+		{ "name": "uHeight", "type": "float", "count": 1, "values": [ 9.0 ] },
+		{ "name": "uDensity", "type": "float", "count": 1, "values": [ 0.3 ] },
+		{ "name": "uDust", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uMode", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uCoreR", "type": "float", "count": 1, "values": [ 8.0 ] },
+		{ "name": "uFlare", "type": "float", "count": 1, "values": [ 1.5 ] },
+		{ "name": "uScale", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uSpeed", "type": "float", "count": 1, "values": [ 6.0 ] },
+		{ "name": "uWind", "type": "float", "count": 2, "values": [ 1.0, 0.0 ] },
+		{ "name": "uTime", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uColor", "type": "float", "count": 3, "values": [ 0.85, 0.88, 0.93 ] }
+	]
+}

@@ -21,7 +21,8 @@
         "bbsplusplus.mixins.json",
         "bbsplusplus-irlite.mixins.json",
         "bbsplusplus-xavin.mixins.json",
-        "bbsplusplus-shadercurves.mixins.json"
+        "bbsplusplus-shadercurves.mixins.json",
+        "bbsplusplus-vfx.mixins.json"
     ],
     "depends": {
         "fabricloader": "${loader_version_range}",

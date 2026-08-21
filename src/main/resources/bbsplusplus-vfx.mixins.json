@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "gbeic.bbsplusplus.mixin.vfx",
+    "plugin": "gbeic.bbsplusplus.compat.vfx.VfxMixinPlugin",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "BbsVfxClientMixin",
+        "VfxLightsClientMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

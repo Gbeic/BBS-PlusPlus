@@ -1,0 +1,39 @@
+{
+	"blend": {
+		"func": "add",
+		"srcrgb": "one",
+		"dstrgb": "zero"
+	},
+	"vertex": "bbsvfx:explosion_smoke",
+	"fragment": "bbsvfx:explosion_smoke",
+	"attributes": ["Position", "UV0"],
+	"samplers": [
+		{ "name": "Sampler0" },
+		{ "name": "Sampler1" },
+		{ "name": "Sampler2" }
+	],
+	"uniforms": [
+		{ "name": "uInvProj", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+		{ "name": "uOrigin", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+		{ "name": "uUp", "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
+		{ "name": "uTanU", "type": "float", "count": 3, "values": [ 1.0, 0.0, 0.0 ] },
+		{ "name": "uTanV", "type": "float", "count": 3, "values": [ 0.0, 0.0, 1.0 ] },
+		{ "name": "uCapY", "type": "float", "count": 1, "values": [ 12.0 ] },
+		{ "name": "uCapR", "type": "float", "count": 1, "values": [ 8.0 ] },
+		{ "name": "uStemR", "type": "float", "count": 1, "values": [ 3.0 ] },
+		{ "name": "uDensity", "type": "float", "count": 1, "values": [ 0.12 ] },
+		{ "name": "uScale", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uRise", "type": "float", "count": 1, "values": [ 1.2 ] },
+		{ "name": "uHeat", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uBallR", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uBallHeat", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uEmit", "type": "float", "count": 1, "values": [ 0.5 ] },
+		{ "name": "uFade", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uTime", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uColor", "type": "float", "count": 3, "values": [ 0.38, 0.36, 0.34 ] },
+		{ "name": "uDrift", "type": "float", "count": 2, "values": [ 0.0, 0.0 ] },
+		{ "name": "uShape", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uSphereRadius", "type": "float", "count": 1, "values": [ 6.0 ] },
+		{ "name": "uSphereHeat", "type": "float", "count": 1, "values": [ 0.0 ] }
+	]
+}

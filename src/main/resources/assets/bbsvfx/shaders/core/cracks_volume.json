@@ -1,0 +1,28 @@
+{
+	"blend": {
+		"func": "add",
+		"srcrgb": "one",
+		"dstrgb": "zero"
+	},
+	"vertex": "bbsvfx:cracks_volume",
+	"fragment": "bbsvfx:cracks_volume",
+	"attributes": ["Position", "UV0"],
+	"samplers": [
+		{ "name": "Sampler0" },
+		{ "name": "Sampler1" }
+	],
+	"uniforms": [
+		{ "name": "uInvProj", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+		{ "name": "uOrigin", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+		{ "name": "uUp", "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
+		{ "name": "uTanU", "type": "float", "count": 3, "values": [ 1.0, 0.0, 0.0 ] },
+		{ "name": "uTanV", "type": "float", "count": 3, "values": [ 0.0, 0.0, 1.0 ] },
+		{ "name": "uReach", "type": "float", "count": 1, "values": [ 16.0 ] },
+		{ "name": "uScale", "type": "float", "count": 1, "values": [ 0.35 ] },
+		{ "name": "uThickness", "type": "float", "count": 1, "values": [ 1.2 ] },
+		{ "name": "uGlow", "type": "float", "count": 1, "values": [ 1.6 ] },
+		{ "name": "uDepth", "type": "float", "count": 1, "values": [ 6.0 ] },
+		{ "name": "uTime", "type": "float", "count": 1, "values": [ 0.0 ] },
+		{ "name": "uColor", "type": "float", "count": 3, "values": [ 1.0, 0.38, 0.08 ] }
+	]
+}

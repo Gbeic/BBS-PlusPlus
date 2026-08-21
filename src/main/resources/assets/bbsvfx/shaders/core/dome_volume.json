@@ -1,0 +1,26 @@
+{
+	"blend": {
+		"func": "add",
+		"srcrgb": "one",
+		"dstrgb": "zero"
+	},
+	"vertex": "bbsvfx:dome_volume",
+	"fragment": "bbsvfx:dome_volume",
+	"attributes": ["Position", "UV0"],
+	"samplers": [
+		{ "name": "Sampler0" },
+		{ "name": "Sampler1" }
+	],
+	"uniforms": [
+		{ "name": "uInvProj", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+		{ "name": "uOrigin", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+		{ "name": "uUp", "type": "float", "count": 3, "values": [ 0.0, 1.0, 0.0 ] },
+		{ "name": "uRadius", "type": "float", "count": 1, "values": [ 16.0 ] },
+		{ "name": "uDensity", "type": "float", "count": 1, "values": [ 0.6 ] },
+		{ "name": "uOpacity", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uRimPow", "type": "float", "count": 1, "values": [ 3.0 ] },
+		{ "name": "uEmit", "type": "float", "count": 1, "values": [ 1.0 ] },
+		{ "name": "uTint", "type": "float", "count": 3, "values": [ 0.35, 0.18, 0.7 ] },
+		{ "name": "uRim", "type": "float", "count": 3, "values": [ 0.6, 0.85, 1.0 ] }
+	]
+}
