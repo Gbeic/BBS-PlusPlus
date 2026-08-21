@@ -82,7 +82,11 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
             return;
         }
 
-        if (!this.ensureDecoder())
+        boolean foreignPass = VideoForeignRenderPassState.isActive();
+
+        /* 灯光和 VFX 插件会为阴影、遮罩等离屏效果重复渲染影片演员。
+         * 外部通道只复用主画面已经上传的纹理，不能打开解码器或再次提交寻帧请求。 */
+        if ((!foreignPass && !this.ensureDecoder()) || (foreignPass && this.decoder == null))
         {
             return;
         }
@@ -100,7 +104,8 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
          * 编辑器的拾取缓冲还会额外渲染一次实体，它只负责鼠标命中，不能重复驱动解码器。 */
         long now = System.nanoTime();
         boolean scrubbing = VideoTimelineState.isScrubbing();
-        boolean renderFrame = !context.isPicking()
+        boolean renderFrame = !foreignPass
+                && !context.isPicking()
                 && (!scrubbing || now - this.lastScrubRenderNanos >= SCRUB_RENDER_INTERVAL_NANOS);
 
         if (renderFrame)
