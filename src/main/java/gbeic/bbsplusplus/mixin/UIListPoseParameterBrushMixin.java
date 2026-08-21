@@ -7,6 +7,7 @@ import gbeic.bbsplusplus.client.ui.pose.PoseBoneLabelUtils;
 import gbeic.bbsplusplus.client.ui.pose.PoseBoneMarkerRenderer;
 import gbeic.bbsplusplus.client.ui.pose.PoseBoneTreeMetadata;
 import mchorse.bbs_mod.cubic.IModel;
+import mchorse.bbs_mod.BBSSettings;
 import mchorse.bbs_mod.l10n.keys.IKey;
 import mchorse.bbs_mod.ui.framework.UIContext;
 import mchorse.bbs_mod.ui.framework.elements.UIElement;
@@ -66,6 +67,12 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
 
     @Unique
     private int bbspp$boneNameTooltipY;
+
+    @Unique
+    private long bbspp$lastPoseBoneWheelTime;
+
+    @Unique
+    private double bbspp$poseBoneWheelInterval;
 
     @Shadow
     protected abstract int getIndexAtCursor(UIContext context);
@@ -242,6 +249,62 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
         {
             cir.setReturnValue(true);
         }
+    }
+
+    /**
+     * 注入目标：通用列表处理滚轮事件的最前端。
+     * 注入原因：原版每次只移动 10 像素，不足骨骼列表的一行；固定倍速又会让精细定位变得生硬。
+     * 修改后的行为：仅为 Pose 关键帧骨骼列表按连续滚轮事件间隔，从原版 10 像素提升到一行或两行，停顿后恢复原版速度。
+     */
+    @Inject(method = "subMouseScrolled", at = @At("HEAD"), cancellable = true, remap = false)
+    private void bbspp$acceleratePoseBoneWheel(UIContext context, CallbackInfoReturnable<Boolean> cir)
+    {
+        if (!((Object) this instanceof UIPoseBoneStringList) || context.mouseWheel == 0D)
+        {
+            return;
+        }
+
+        UIList<?> self = (UIList<?>) (Object) this;
+
+        /* 只有关键帧 Pose 编辑器存在参数刷宿主，普通表单 Pose 列表保持原版速度。 */
+        if (!self.area.isInside(context) || !self.scroll.hasScrollbar() || this.bbspp$findParameterBrush() == null)
+        {
+            return;
+        }
+
+        long now = System.nanoTime();
+        double elapsed = this.bbspp$lastPoseBoneWheelTime == 0L
+            ? Double.POSITIVE_INFINITY
+            : (now - this.bbspp$lastPoseBoneWheelTime) / 1_000_000D;
+        double distance = 10D;
+
+        if (elapsed <= 250D)
+        {
+            this.bbspp$poseBoneWheelInterval = this.bbspp$poseBoneWheelInterval <= 0D
+                ? elapsed
+                : this.bbspp$poseBoneWheelInterval * 0.5D + elapsed * 0.5D;
+
+            if (this.bbspp$poseBoneWheelInterval < 75D)
+            {
+                distance = self.scroll.scrollItemSize * 2D;
+            }
+            else if (this.bbspp$poseBoneWheelInterval < 140D)
+            {
+                distance = self.scroll.scrollItemSize;
+            }
+        }
+        else
+        {
+            this.bbspp$poseBoneWheelInterval = 0D;
+        }
+
+        this.bbspp$lastPoseBoneWheelTime = now;
+
+        distance *= BBSSettings.scrollingSensitivity.get();
+
+        self.scroll.scrollBy(-Math.copySign(distance, context.mouseWheel));
+        context.markUpdateScroll();
+        cir.setReturnValue(true);
     }
 
     /**
