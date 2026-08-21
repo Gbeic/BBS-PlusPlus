@@ -82,6 +82,8 @@
         "LangKeyMixin",
         "SoundManagerMixin",
         "WaveReaderMixin",
+        "SettingsManagerMixin",
+        "ValueColorsMixin",
         "UIReplaysEditorHeaderBlockerMixin",
         "UIKeyframesBoxSelectionMixin",
         "UIClipsMixin",
