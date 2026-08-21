@@ -227,7 +227,7 @@
     "bbspp.undo_history.property.hunger": "饥饿值",
     "bbspp.undo_history.property.xp_level": "经验等级",
     "bbspp.undo_history.property.xp_progress": "经验进度",
-    "bbspp.ui.pose.parameter_brush_tooltip": "骨骼参数刷\n\n单选骨骼时，可点击列表或模型视图中的任意目标骨骼粘贴；多选骨骼时，切换目标姿势帧后通过此按钮按名称批量粘贴。成功后自动退出，Esc取消。橙色菱形表示该骨骼在当前姿势帧有改动",
+    "bbspp.ui.pose.parameter_brush_tooltip": "骨骼参数刷\n\n单选骨骼时，可点击列表或模型视图中的任意目标骨骼粘贴；多选骨骼时，切换目标姿势帧后通过此按钮按名称批量粘贴。成功后自动退出，Esc取消\n\n橙色菱形表示当前帧有改动，灰色斜线菱形表示该骨骼跳过当前帧；点击菱形可切换",
     "bbspp.ui.pose.parameter_brush_batch_source": "已复制 %s 根骨骼\n\n切换到同一模型的目标姿势关键帧后，点击此处按骨骼名称批量粘贴；Esc取消",
     "bbspp.ui.pose.parameter_brush_batch_paste": "批量粘贴 %s 根骨骼\n\n按骨骼名称写入当前选中的兼容姿势关键帧，成功后自动退出",
     "bbspp.ui.pose.parameter_brush_cancel": "取消骨骼参数刷",

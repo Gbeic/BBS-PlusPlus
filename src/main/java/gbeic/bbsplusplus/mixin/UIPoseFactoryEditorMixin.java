@@ -2,6 +2,7 @@ package gbeic.bbsplusplus.mixin;
 
 import gbeic.bbsplusplus.client.ui.pose.IPoseParameterBrush;
 import gbeic.bbsplusplus.client.ui.pose.IPoseParameterBrushHost;
+import gbeic.bbsplusplus.client.ui.pose.PoseBoneSkipData;
 import gbeic.bbsplusplus.client.ui.pose.PoseParameterBrushState;
 import mchorse.bbs_mod.l10n.L10n;
 import mchorse.bbs_mod.l10n.keys.IKey;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -183,7 +185,11 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
 
         PoseTransform snapshot = state.getSnapshot();
 
-        UIPoseKeyframeFactory.UIPoseFactoryEditor.apply(this.editor, this.keyframe, bone, (target) -> target.copy(snapshot));
+        UIPoseKeyframeFactory.UIPoseFactoryEditor.apply(this.editor, this.keyframe, (pose) ->
+        {
+            PoseBoneSkipData.setSkipped(pose, bone, false);
+            pose.get(bone).copy(snapshot);
+        });
         this.bbspp$cancelParameterBrush();
 
         return Result.APPLIED;
@@ -229,6 +235,88 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
         PoseTransform transform = bone == null ? null : self.getPose().transforms.get(bone);
 
         return transform != null && !transform.isDefault();
+    }
+
+    @Override
+    public boolean bbspp$isPoseBoneSkipped(String bone)
+    {
+        UIPoseKeyframeFactory.UIPoseFactoryEditor self = (UIPoseKeyframeFactory.UIPoseFactoryEditor) (Object) this;
+
+        return PoseBoneSkipData.isSkipped(self.getPose(), bone);
+    }
+
+    @Override
+    public boolean bbspp$togglePoseBoneSkipped(String clickedBone)
+    {
+        UIPoseKeyframeFactory.UIPoseFactoryEditor self = (UIPoseKeyframeFactory.UIPoseFactoryEditor) (Object) this;
+
+        if (!self.hasBone(clickedBone))
+        {
+            return false;
+        }
+
+        List<String> selected = new ArrayList<>(self.groups.list.getCurrent());
+
+        /* 点未选中的状态菱形时先切为单选；点已选中的骨骼则作用于整个多选集合。 */
+        if (!selected.contains(clickedBone))
+        {
+            selected.clear();
+            selected.add(clickedBone);
+            self.restoreSelection(selected);
+        }
+
+        selected.removeIf((bone) -> !self.hasBone(bone));
+
+        if (selected.isEmpty())
+        {
+            return false;
+        }
+
+        boolean allSkipped = true;
+
+        for (String bone : selected)
+        {
+            if (!PoseBoneSkipData.isSkipped(self.getPose(), bone))
+            {
+                allSkipped = false;
+                break;
+            }
+        }
+
+        boolean skipped = !allSkipped;
+
+        UIPoseKeyframeFactory.UIPoseFactoryEditor.apply(this.editor, this.keyframe, (pose) ->
+        {
+            for (String bone : selected)
+            {
+                PoseBoneSkipData.setSkipped(pose, bone, skipped);
+            }
+        });
+
+        return true;
+    }
+
+    /**
+     * 注入目标：姿势编辑器的固定、颜色和光照写入调用。
+     * 注入原因：编辑一个已跳过的骨骼时，若只改参数，画面仍不会响应且容易造成误解。
+     * 修改后的行为：在同一次关键帧通知中先恢复该骨骼参与，再执行原参数写入。
+     */
+    @Redirect(
+        method = {"setFix", "setColor", "setLighting"},
+        at = @At(
+            value = "INVOKE",
+            target = "Lmchorse/bbs_mod/ui/framework/elements/input/keyframes/factories/UIPoseKeyframeFactory$UIPoseFactoryEditor;apply(Lmchorse/bbs_mod/ui/framework/elements/input/keyframes/UIKeyframes;Lmchorse/bbs_mod/utils/keyframes/Keyframe;Ljava/lang/String;Ljava/util/function/Consumer;)V"
+        ),
+        remap = false
+    )
+    private void bbspp$unskipBoneBeforeAuxiliaryEdit(UIKeyframes editor, Keyframe<?> keyframe, String bone,
+                                                      java.util.function.Consumer<PoseTransform> consumer)
+    {
+        UIPoseKeyframeFactory.UIPoseFactoryEditor.apply(editor, keyframe, (pose) ->
+        {
+            PoseBoneSkipData.setSkipped(pose, bone, false);
+            consumer.accept(pose.get(bone));
+        });
     }
 
     @Unique
@@ -309,6 +397,7 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
 
                 for (Map.Entry<String, PoseTransform> target : targets)
                 {
+                    PoseBoneSkipData.setSkipped(pose, target.getKey(), false);
                     pose.get(target.getKey()).copy(target.getValue());
                 }
 

@@ -38,4 +38,11 @@ public interface IPoseParameterBrush
 
     /** 指定骨骼在当前姿势关键帧中是否存在非默认参数。 */
     boolean bbspp$isPoseBoneModified(String bone);
+
+    /** 指定骨骼是否已被设置为跳过当前姿势关键帧。 */
+    boolean bbspp$isPoseBoneSkipped(String bone);
+
+    /** 按当前骨骼选择批量切换“跳过当前关键帧”状态。 */
+    boolean bbspp$togglePoseBoneSkipped(String clickedBone);
+
 }

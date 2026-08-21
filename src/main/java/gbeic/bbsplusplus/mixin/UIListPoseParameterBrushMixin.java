@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -65,6 +66,9 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
 
     @Unique
     private int bbspp$boneNameTooltipY;
+
+    @Shadow
+    protected abstract int getIndexAtCursor(UIContext context);
 
     /**
      * 注入目标：通用列表开始绘制之前。
@@ -172,7 +176,7 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
         int availableWidth = Math.max(0, x + self.area.w - this.bbspp$getBoneNameRightInset() - textX);
         String visibleLabel = PoseBoneLabelUtils.limitMiddle(context.batcher.getFont(), label, availableWidth);
 
-        if (hover && !visibleLabel.equals(label))
+        if (hover && context.mouseX < x + self.area.w - 19 && !visibleLabel.equals(label))
         {
             this.bbspp$boneNameTooltipCandidate = label;
             this.bbspp$boneNameTooltipY = y;
@@ -205,6 +209,42 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     }
 
     /**
+     * 注入目标：通用列表处理鼠标点击的最前端。
+     * 注入原因：右侧状态菱形必须拥有独立点击区，不能触发普通骨骼选择或参数刷粘贴。
+     * 修改后的行为：左键点击状态槽时按当前多选切换骨骼是否跳过本 Pose 帧，并立即消费事件。
+     */
+    @Inject(method = "subMouseClicked", at = @At("HEAD"), cancellable = true, remap = false)
+    private void bbspp$togglePoseBoneFromStateDiamond(UIContext context, CallbackInfoReturnable<Boolean> cir)
+    {
+        if (!((Object) this instanceof UIPoseBoneStringList) || context.mouseButton != 0)
+        {
+            return;
+        }
+
+        UIList<?> self = (UIList<?>) (Object) this;
+        int markerX = self.area.ex() - 12;
+
+        if (!self.area.isInside(context) || context.mouseX < markerX - 7 || context.mouseX > markerX + 7)
+        {
+            return;
+        }
+
+        int index = this.getIndexAtCursor(context);
+
+        if (index < 0 || index >= this.list.size() || !(this.list.get(index) instanceof String bone))
+        {
+            return;
+        }
+
+        IPoseParameterBrush brush = this.bbspp$findParameterBrush();
+
+        if (brush != null && brush.bbspp$togglePoseBoneSkipped(bone))
+        {
+            cir.setReturnValue(true);
+        }
+    }
+
+    /**
      * 注入目标：通用列表把鼠标点击转换为选择之前。
      * 注入原因：骨骼列表的回调只拿到选择结果，无法可靠知道 Shift/Ctrl 操作下这次真正点中的目标骨骼。
      * 修改后的行为：先把实际点击行交给参数刷；点中复制源时保持原选择，其它目标粘贴后继续执行原版选择切换。
@@ -234,7 +274,7 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     /**
      * 注入目标：通用列表完成单行原版绘制之后。
      * 注入原因：原版姿势骨骼列表只显示名称，无法判断当前 Pose 关键帧究竟修改了哪些骨骼。
-     * 修改后的行为：非默认骨骼在行尾显示橙色菱形；参数刷启用时，复制源额外显示绿色复制图标。
+     * 修改后的行为：非默认骨骼显示橙色菱形，跳过骨骼显示灰色斜线菱形；状态槽悬停可直接切换，参数刷图标仍固定在其左侧。
      */
     @Inject(method = "renderListElement", at = @At("TAIL"), remap = false)
     private void bbspp$renderPoseBoneState(UIContext context, T element, int index, int x, int y,
@@ -259,6 +299,7 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
 
         boolean source = brush.bbspp$isParameterBrushSource(bone);
         boolean batch = brush.bbspp$isParameterBrushBatch();
+        boolean markerHover = hover && context.mouseX >= markerX - 7 && context.mouseX <= markerX + 7;
 
         if (source)
         {
@@ -273,10 +314,19 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
             context.batcher.icon(Icons.PASTE, Colors.opaque(Colors.GREEN), brushIconX, markerY, 0.5F, 0.5F);
         }
 
-        if (brush.bbspp$isPoseBoneModified(bone))
+        if (brush.bbspp$isPoseBoneSkipped(bone))
+        {
+            PoseBoneMarkerRenderer.renderSkippedDiamond(context, markerX, markerY);
+        }
+        else if (brush.bbspp$isPoseBoneModified(bone))
         {
             PoseBoneMarkerRenderer.renderModifiedDiamond(context, markerX, markerY, Colors.opaque(Colors.ORANGE));
         }
+        else if (markerHover)
+        {
+            PoseBoneMarkerRenderer.renderHoverDiamond(context, markerX, markerY);
+        }
+
     }
 
     @Unique

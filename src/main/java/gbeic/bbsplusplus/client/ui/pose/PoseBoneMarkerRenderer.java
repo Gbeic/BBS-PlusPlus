@@ -44,6 +44,25 @@ public class PoseBoneMarkerRenderer
         BufferRenderer.drawWithGlobalProgram(builder.end());
     }
 
+    /** 绘制表示“本帧不参与该骨骼插值”的灰色斜线菱形。 */
+    public static void renderSkippedDiamond(UIContext context, int x, int y)
+    {
+        renderModifiedDiamond(context, x, y, Colors.opaque(0x888888));
+
+        int slash = Colors.opaque(0xE0E0E0);
+
+        for (int i = -2; i <= 2; i++)
+        {
+            context.batcher.box(x + i, y - i, x + i + 1, y - i + 1, slash);
+        }
+    }
+
+    /** 绘制只在状态槽悬停时出现的弱提示菱形。 */
+    public static void renderHoverDiamond(UIContext context, int x, int y)
+    {
+        renderModifiedDiamond(context, x, y, Colors.A25 | 0xC0C0C0);
+    }
+
     private PoseBoneMarkerRenderer()
     {}
 }
