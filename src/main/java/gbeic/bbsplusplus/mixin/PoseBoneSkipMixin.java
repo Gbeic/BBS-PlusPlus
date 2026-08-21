@@ -4,6 +4,7 @@ import gbeic.bbsplusplus.client.ui.pose.IPoseBoneSkip;
 import mchorse.bbs_mod.data.types.ListType;
 import mchorse.bbs_mod.data.types.MapType;
 import mchorse.bbs_mod.utils.pose.Pose;
+import mchorse.bbs_mod.utils.pose.PoseTransform;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +29,12 @@ public class PoseBoneSkipMixin implements IPoseBoneSkip
 {
     @Unique
     private static final String bbspp$SKIPPED_BONES_KEY = "bbspp_skipped_bones";
+
+    @Unique
+    private static final PoseTransform bbspp$DEFAULT_POSE_TRANSFORM = new PoseTransform();
+
+    @Unique
+    private static final Set<String> bbspp$COMPARE_BONES = new HashSet<>();
 
     @Unique
     private final Set<String> bbspp$skippedBones = new LinkedHashSet<>();
@@ -156,16 +164,80 @@ public class PoseBoneSkipMixin implements IPoseBoneSkip
 
     /**
      * 注入目标：{@link Pose#equals(Object)} 返回原版比较结果之后。
-     * 注入原因：撤销和脏状态判断必须感知只有跳过集合发生的变化。
-     * 修改后的行为：原版 Pose 相等时，再比较双方的跳过骨骼集合。
+     * 注入原因：撤销和脏状态判断必须感知跳过集合；同时 JOML 严格区分 {@code 0.0} 与
+     * {@code -0.0}，导致插值新建帧把负零归一为正零后，视觉参数相同却无法绘制连续色条。
+     * 修改后的行为：原版相等或仅存在正负零差异时视为参数相等，再比较双方的跳过骨骼集合。
      */
     @Inject(method = "equals", at = @At("RETURN"), cancellable = true)
     private void bbspp$compareSkippedBones(Object obj, CallbackInfoReturnable<Boolean> cir)
     {
-        if (cir.getReturnValue() && obj instanceof IPoseBoneSkip skip)
+        if (obj instanceof Pose pose && obj instanceof IPoseBoneSkip skip)
         {
-            cir.setReturnValue(this.bbspp$skippedBones.equals(skip.bbspp$getSkippedBones()));
+            boolean transformsEqual = cir.getReturnValue()
+                || bbspp$poseTransformsEqual((Pose) (Object) this, pose);
+
+            cir.setReturnValue(transformsEqual
+                && this.bbspp$skippedBones.equals(skip.bbspp$getSkippedBones()));
         }
+    }
+
+    @Unique
+    private static boolean bbspp$poseTransformsEqual(Pose a, Pose b)
+    {
+        bbspp$COMPARE_BONES.clear();
+        bbspp$COMPARE_BONES.addAll(a.transforms.keySet());
+        bbspp$COMPARE_BONES.addAll(b.transforms.keySet());
+
+        for (String bone : bbspp$COMPARE_BONES)
+        {
+            if (!bbspp$poseTransformEquals(a.transforms.get(bone), b.transforms.get(bone)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Unique
+    private static boolean bbspp$poseTransformEquals(PoseTransform a, PoseTransform b)
+    {
+        if (a == null)
+        {
+            a = bbspp$DEFAULT_POSE_TRANSFORM;
+        }
+
+        if (b == null)
+        {
+            b = bbspp$DEFAULT_POSE_TRANSFORM;
+        }
+
+        return bbspp$vectorEquals(a.translate.x, a.translate.y, a.translate.z,
+                b.translate.x, b.translate.y, b.translate.z)
+            && bbspp$vectorEquals(a.scale.x, a.scale.y, a.scale.z,
+                b.scale.x, b.scale.y, b.scale.z)
+            && bbspp$vectorEquals(a.rotate.x, a.rotate.y, a.rotate.z,
+                b.rotate.x, b.rotate.y, b.rotate.z)
+            && bbspp$vectorEquals(a.rotate2.x, a.rotate2.y, a.rotate2.z,
+                b.rotate2.x, b.rotate2.y, b.rotate2.z)
+            && bbspp$floatEquals(a.fix, b.fix)
+            && a.color.equals(b.color)
+            && bbspp$floatEquals(a.lighting, b.lighting);
+    }
+
+    @Unique
+    private static boolean bbspp$vectorEquals(float ax, float ay, float az, float bx, float by, float bz)
+    {
+        return bbspp$floatEquals(ax, bx)
+            && bbspp$floatEquals(ay, by)
+            && bbspp$floatEquals(az, bz);
+    }
+
+    @Unique
+    private static boolean bbspp$floatEquals(float a, float b)
+    {
+        /* 普通 == 专门把正负零归为相等；位比较则保留原版对其它值（包括 NaN）的精确语义。 */
+        return a == b || Float.floatToIntBits(a) == Float.floatToIntBits(b);
     }
 
     /**
