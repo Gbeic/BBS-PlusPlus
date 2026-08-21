@@ -1,7 +1,6 @@
 package gbeic.bbsplusplus.mixin;
 
 import mchorse.bbs_mod.l10n.keys.StringKey;
-import gbeic.bbsplusplus.BBSVFXZHTranslator;
 import gbeic.bbsplusplus.IRLightsZHTranslator;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +20,7 @@ public class StringKeyMixin
 {
     /**
      * 注入目标：{@link StringKey#get()}。
-     * 注入原因：IRLights 与 BBS VFX 都存在大量 {@code IKey.constant("英文")} 硬编码文本，无法依赖资源语言文件覆盖。
+     * 注入原因：IRLights 存在大量 {@code IKey.constant("英文")} 硬编码文本，无法依赖资源语言文件覆盖。
      * 修改行为：读取字符串时查询插件汉化表，命中后直接返回中文。
      */
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
@@ -32,10 +31,6 @@ public class StringKeyMixin
         if (!bbspp$isChineseLanguage()) return;
 
         String chinese = IRLightsZHTranslator.getChinese(self.string);
-        if (chinese == null)
-        {
-            chinese = BBSVFXZHTranslator.getChinese(self.string);
-        }
 
         if (chinese != null)
         {

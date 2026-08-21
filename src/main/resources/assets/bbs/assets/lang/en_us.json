@@ -56,17 +56,6 @@
     "bbs.config.bbspp.gizmo_keep_original": "Keep Original Hotkey Behavior",
     "bbs.config.bbspp.gizmo_keep_original-comment": "Only effective when Blockbench Flavor Gizmo is enabled. When on, pressing G/S/R a second time runs the original BBS hotkey function instead of restoring the previous mode",
 
-    "bbs.config.personalization.xavin.title": "BBS VFX",
-    "bbs.config.personalization.xavin.enabled": "Enabled",
-    "bbs.config.personalization.xavin.enabled-comment": "Master switch for the BBS VFX addon.",
-    "bbs.config.vfx.title": "VFX",
-    "bbs.config.vfx.ae_tracking": "AE Tracking",
-    "bbs.config.vfx.ae_tracking-comment": "Also export an After Effects camera script (.jsx) next to the rendered video.",
-    "bbs.config.vfx.glb_export": "GLB Export",
-    "bbs.config.vfx.glb_export-comment": "Also export a binary glTF (.glb) animated camera next to the rendered video, for Blender.",
-    "bbs.ui.camera.clips.xavin:follow_curve": "Follow Curve",
-    "bbs.ui.camera.clips.xavin:impact": "Impact Frame",
-
     "bbs.config.bbspp.iris_button_tooltip": "Shaders Control",
     "bbspp.ui.shader_curve_picker.back": "Back",
     "bbspp.ui.shader_curve_picker.built_in": "BBS Built-in Curves",

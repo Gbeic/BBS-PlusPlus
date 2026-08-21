@@ -1,7 +1,6 @@
 package gbeic.bbsplusplus.mixin;
 
 import mchorse.bbs_mod.l10n.keys.LangKey;
-import gbeic.bbsplusplus.BBSVFXZHTranslator;
 import gbeic.bbsplusplus.IRLightsZHTranslator;
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +20,7 @@ public class LangKeyMixin
     /**
      * 注入目标：{@link LangKey#get()}。
      * 注入原因：部分外部插件会在 L10n 重载时直接写入英文 {@code LangKey.content}，普通 JSON 语言文件无法稳定覆盖。
-     * 修改行为：按 key 查询插件汉化表，命中 IRLights 或 BBS VFX 的键时返回中文，其余键保持原逻辑。
+     * 修改行为：按 key 查询插件汉化表，命中 IRLights 的键时返回中文，其余键保持原逻辑。
      */
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
     private void onGet(CallbackInfoReturnable<String> cir)
@@ -32,10 +31,6 @@ public class LangKeyMixin
 
         // 仅翻译已登记的外部插件 key，不干涉其他模组。
         String chinese = IRLightsZHTranslator.getChineseForKey(self.key);
-        if (chinese == null)
-        {
-            chinese = BBSVFXZHTranslator.getChineseForKey(self.key);
-        }
 
         if (chinese != null)
         {

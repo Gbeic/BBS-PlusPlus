@@ -7,12 +7,20 @@ import mchorse.bbs_mod.l10n.keys.IKey;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 关键帧轨道名称本地化工具。
  * <p>
  * 将硬编码的英文轨道名称映射为中文显示名。
  * 通过 {@link BBSAddonsSettings#chineseKeyframeNames} 开关控制。
+ * </p>
+ * <p>
+ * 轨道映射按形态/插件隔离：
+ * 通用轨道（BBS 原版、摄像机剪辑、IRLights、LumenCore 等）走 {@link #CN}；
+ * BBS VFX 插件的轨道走 {@link #VFX_CN}（语言键前缀 bbspp.keyframe.vfx.）；
+ * VFX LIGHTS 灯插件的轨道走 {@link #VFX_LIGHT_CN}（语言键前缀 bbspp.keyframe.vfxlight.）。
+ * 互不干扰，避免同名属性（speed/radius/color 等）的翻译互相覆盖。
  * </p>
  */
 public class KeyframeLocalizer
@@ -21,6 +29,17 @@ public class KeyframeLocalizer
     private static final Map<String, String> ITEM_SPRAY_CN = new HashMap<>();
     private static final Map<String, String> AAA_PARTICLE_CN = new HashMap<>();
     private static final Map<String, String> VIDEO_BILLBOARD_CN = new HashMap<>();
+    private static final Map<String, String> VFX_CN = new HashMap<>();
+    private static final Map<String, String> VFX_LIGHT_CN = new HashMap<>();
+
+    /** BBS VFX 插件注入到任意 BBS 表单上的增强轨道（拖影、混合、文字增强、跟随偏移等）。
+     *  这些轨道即使所属表单不是 VFX 表单（如 BlockForm 上的 blend 通道），也属于 VFX 插件。 */
+    private static final Set<String> VFX_ENHANCEMENT_TRACKS = Set.of(
+        "smear", "smear_frames", "motion_lines", "blend", "blend_mode", "follow_offset",
+        "tracking", "stroke_width", "stroke_color", "stroke_only", "font", "font_size",
+        "projection", "proj_range", "proj_fade", "gradient", "gradient_start", "gradient_end",
+        "gradient_angle", "xavin$whole"
+    );
 
     static
     {
@@ -103,7 +122,7 @@ public class KeyframeLocalizer
         cn("rotation", "旋转");
         cn("shading", "阴影");
 
-        /* 文本标签 专用 */
+        /* 文本标签 专用（BBS 原版属性） */
         cn("max", "最大宽度");
         cn("anchorX", "锚点 X");
         cn("anchorY", "锚点 Y");
@@ -183,232 +202,6 @@ public class KeyframeLocalizer
         cn("cookie_scale", "遮罩缩放");
         cn("cookie_invert", "反转遮罩");
 
-        /* BBS VFX 插件专用：文本、曲线、拖影、破坏盒与冲击帧 */
-        cn("tracking", "字距");
-        cn("stroke_width", "描边宽度");
-        cn("stroke_color", "描边颜色");
-        cn("stroke_only", "仅描边");
-        cn("blend_mode", "混合模式");
-        cn("font", "字体");
-        cn("font_size", "字号");
-        cn("projection", "文字投影");
-        cn("proj_range", "投影范围");
-        cn("proj_fade", "投影淡出");
-        cn("gradient", "渐变");
-        cn("gradient_start", "渐变起始");
-        cn("gradient_end", "渐变结束");
-        cn("gradient_angle", "渐变角度");
-
-        cn("3d curve", "3D 曲线");
-        cn("points", "控制点");
-        cn("point_", "点");
-        cn("resolution", "分辨率");
-        cn("closed", "闭合");
-        cn("extrude_align", "挤出对齐");
-        cn("extrude_block", "挤出方块");
-        cn("extrude_blocks", "挤出方块");
-        cn("extrude_connect", "挤出连接");
-        cn("extrude_scale", "挤出缩放");
-        cn("extrude_solid", "实心挤出");
-        cn("extrude_spacing", "挤出间距");
-        cn("taper_enabled", "启用锥度");
-        cn("taper_start", "起始锥度");
-        cn("taper_end", "结束锥度");
-        cn("taper_curve", "锥度曲线");
-        cn("trim_start", "裁剪起点");
-        cn("trim_end", "裁剪终点");
-        cn("follow_offset", "跟随偏移");
-        cn("xavin_follow_curve_progress", "曲线进度");
-        cn("xavin_follow_enabled", "跟随曲线");
-        cn("xavin_follow_target", "跟随目标");
-        cn("xavin_follow_align", "沿曲线对齐");
-        cn("xavin_tracker", "AE 跟踪器");
-
-        cn("smear_frames", "涂抹帧");
-        cn("motion_lines", "动态线");
-        cn("smear", "拖影");
-        cn("xavin_smear", "拖影");
-        cn("xavin_lines", "动态线");
-        cn("xavin_smear_x", "拖影 X");
-        cn("xavin_smear_y", "拖影 Y");
-        cn("xavin_smear_z", "拖影 Z");
-        cn("xavin_smear_count", "拖影数量");
-        cn("xavin_smear_falloff", "拖影衰减");
-        cn("xavin_smear_dissolve", "拖影溶解");
-        cn("xavin_smear_manual", "手动拖影");
-        cn("xavin_smear_arc", "弧形拖影");
-        cn("xavin_smear_time", "拖影时间");
-        cn("xavin_smear_stretch", "拖影拉伸");
-        cn("xavin_smear_density", "拖影密度");
-        cn("xavin_smear_opacity", "拖影不透明度");
-        cn("xavin_smear_lines", "拖影线条");
-        cn("xavin_smear_lines_count", "线条数量");
-        cn("xavin_smear_lines_width", "线条宽度");
-        cn("xavin_smear_lines_spread", "线条扩散");
-        cn("xavin_smear_lines_ox", "线条偏移 X");
-        cn("xavin_smear_lines_oy", "线条偏移 Y");
-        cn("xavin_smear_lines_oz", "线条偏移 Z");
-        cn("xavin_smear_lines_texture", "线条纹理颜色");
-        cn("xavin_blend_factor", "混合强度");
-        cn("xavin_blend_mode", "混合模式");
-        cn("xavin$whole", "整个模型");
-        cn("blend", "混合");
-
-        cn("destruction", "破坏");
-        cn("blocks", "方块");
-        cn("dir_pitch", "方向俯仰");
-        cn("dir_yaw", "方向偏航");
-        cn("dir_strength", "方向强度");
-        cn("radial_strength", "径向强度");
-        cn("point_mode", "点模式");
-        cn("point_away", "远离点");
-        cn("point_strength", "点强度");
-        cn("point_x", "点 X");
-        cn("point_y", "点 Y");
-        cn("point_z", "点 Z");
-        cn("random_amount", "随机量");
-        cn("seed", "随机种子");
-        cn("rotation_amount", "旋转量");
-        cn("stagger", "错峰");
-        cn("invert_order", "反转顺序");
-        cn("physics_mode", "物理模式");
-        cn("phys_gravity", "物理重力");
-        cn("phys_ground", "地面平面");
-        cn("phys_world", "世界碰撞");
-        cn("phys_world_margin", "世界边距");
-        cn("phys_duration", "物理持续时间");
-        cn("phys_friction", "摩擦力");
-        cn("phys_bounciness", "弹性");
-        cn("phys_explosion", "爆炸");
-        cn("phys_explosion_radius", "爆炸半径");
-        cn("phys_explosion_cone", "爆炸锥形");
-        cn("phys_wave", "释放波");
-        cn("phys_wave_time", "波动时间");
-        cn("phys_cluster_size", "簇大小");
-        cn("phys_cluster_strength", "簇强度");
-        cn("phys_support", "支撑完整性");
-        cn("phys_shatter", "子方块碎裂");
-        cn("phys_shatter_strength", "碎裂强度");
-
-        cn("silhouette", "剪影");
-        cn("silhouette_kf", "剪影");
-        cn("Silhouette", "剪影");
-        cn("silColor", "剪影颜色");
-        cn("bgColor", "背景颜色");
-        cn("target", "目标演员");
-        cn("silStrokes", "剪影笔触");
-        cn("silStrokes_kf", "剪影笔触");
-        cn("silStrokeAngle", "笔触角度");
-        cn("silStrokeAngle_kf", "笔触角度");
-        cn("silStrokeLength", "笔触长度");
-        cn("silStrokeLength_kf", "笔触长度");
-        cn("silStrokeScale", "笔触缩放");
-        cn("silStrokeScale_kf", "笔触缩放");
-        cn("silStrokeRough", "笔触粗糙度");
-        cn("silStrokeRough_kf", "笔触粗糙度");
-        cn("inkBurst", "墨爆");
-        cn("inkBurst_kf", "墨爆");
-        cn("inkColor", "墨迹颜色");
-        cn("inkRadius", "墨迹半径");
-        cn("inkRadius_kf", "墨迹半径");
-        cn("inkInner", "墨迹内径");
-        cn("inkInner_kf", "墨迹内径");
-        cn("inkSpikes", "墨迹尖刺");
-        cn("inkSpikes_kf", "墨迹尖刺");
-        cn("inkRough", "墨迹粗糙度");
-        cn("inkRough_kf", "墨迹粗糙度");
-        cn("inkSeed", "墨迹种子");
-        cn("inkSeed_kf", "墨迹种子");
-        cn("shockwave", "冲击波");
-        cn("shockwave_kf", "冲击波");
-        cn("Shockwave", "冲击波");
-        cn("shockwaveProgress", "冲击波进度");
-        cn("shockwaveProgress_kf", "冲击波进度");
-        cn("shockwaveColor", "冲击波颜色");
-        cn("shockwaveRadius", "冲击波半径");
-        cn("shockwaveRadius_kf", "冲击波半径");
-        cn("shockwaveWidth", "冲击波宽度");
-        cn("shockwaveWidth_kf", "冲击波宽度");
-        cn("flashStar", "闪光星芒");
-        cn("flashStar_kf", "闪光星芒");
-        cn("Flash star", "闪光星芒");
-        cn("flashStarSize", "星芒大小");
-        cn("flashStarSize_kf", "星芒大小");
-        cn("flashStarWidth", "星芒宽度");
-        cn("flashStarWidth_kf", "星芒宽度");
-        cn("flashStarGlow", "星芒辉光");
-        cn("flashStarGlow_kf", "星芒辉光");
-        cn("flashStarRotation", "星芒旋转");
-        cn("flashStarRotation_kf", "星芒旋转");
-        cn("flashStarColor", "星芒颜色");
-        cn("invert", "反转");
-        cn("invert_kf", "反转");
-        cn("flash", "闪光");
-        cn("flash_kf", "闪光");
-        cn("Flash", "闪光");
-        cn("grayscale", "灰度");
-        cn("grayscale_kf", "灰度");
-        cn("Grayscale", "灰度");
-        cn("threshold", "阈值");
-        cn("threshold_kf", "阈值");
-        cn("Threshold", "阈值");
-        cn("thresholdLevel", "阈值等级");
-        cn("thresholdLevel_kf", "阈值等级");
-        cn("Threshold level", "阈值等级");
-        cn("thresholdSoft", "阈值柔和度");
-        cn("thresholdSoft_kf", "阈值柔和度");
-        cn("Threshold soft", "阈值柔和度");
-        cn("darkColor", "暗部颜色");
-        cn("lightColor", "亮部颜色");
-        cn("chroma", "色差");
-        cn("chroma_kf", "色差");
-        cn("Chroma", "色差");
-        cn("focusX", "焦点 X");
-        cn("focusX_kf", "焦点 X");
-        cn("Focus X", "焦点 X");
-        cn("focusY", "焦点 Y");
-        cn("focusY_kf", "焦点 Y");
-        cn("Focus Y", "焦点 Y");
-        cn("zoomBlur", "缩放模糊");
-        cn("zoomBlur_kf", "缩放模糊");
-        cn("Zoom blur", "缩放模糊");
-        cn("blurMode", "模糊模式");
-        cn("zoomLines", "缩放线");
-        cn("zoomLines_kf", "缩放线");
-        cn("Zoom lines", "缩放线");
-        cn("linesCount", "线条数量");
-        cn("linesCount_kf", "线条数量");
-        cn("Lines count", "线条数量");
-        cn("linesThickness", "线条粗细");
-        cn("linesThickness_kf", "线条粗细");
-        cn("linesInner", "线条内径");
-        cn("linesInner_kf", "线条内径");
-        cn("linesMode", "线条模式");
-        cn("linesSeed", "线条种子");
-        cn("linesSeed_kf", "线条种子");
-        cn("linesColor", "线条颜色");
-        cn("shapes", "形状");
-        cn("shapes_kf", "形状");
-        cn("Shapes", "形状");
-        cn("shapesCount", "形状数量");
-        cn("shapesCount_kf", "形状数量");
-        cn("Shapes count", "形状数量");
-        cn("shapesSize", "形状大小");
-        cn("shapesSize_kf", "形状大小");
-        cn("Shapes size", "形状大小");
-        cn("shapesSpread", "形状扩散");
-        cn("shapesSpread_kf", "形状扩散");
-        cn("Shapes spread", "形状扩散");
-        cn("centerStar", "中心星形");
-        cn("centerStar_kf", "中心星形");
-        cn("Center star", "中心星形");
-        cn("centerCircle", "中心圆环");
-        cn("centerCircle_kf", "中心圆环");
-        cn("Center circle", "中心圆环");
-        cn("shapesColor", "形状颜色");
-        cn("shapesDelay", "形状延迟");
-        cn("shapesDelay_kf", "形状延迟");
-
         /* 用户自定义通道 */
         cn("user1", "用户 1");
         cn("user2", "用户 2");
@@ -416,7 +209,7 @@ public class KeyframeLocalizer
         cn("user4", "用户 4");
         cn("user5", "用户 5");
         cn("user6", "用户 6");
-        
+
         /* 物品喷射形态专属。使用上下文映射，避免覆盖同名的光源、粒子、广告牌等公共轨道。 */
         itemSpray("amount", "数量");
         itemSpray("range", "射程");
@@ -485,6 +278,471 @@ public class KeyframeLocalizer
         videoBillboard("outOfRange", "超出处理");
         videoBillboard("keepAspectRatio", "保持原始比例");
         videoBillboard("billboard", "始终面向镜头");
+
+        /* ═══════════════════════════════════════
+           BBS VFX 插件专属轨道（语言键前缀 bbspp.keyframe.vfx.）
+           文本增强、曲线、拖影/动态线、混合、破坏盒、光束、穹顶、爆炸、风、冲击帧
+           ═══════════════════════════════════════ */
+
+        /* 文本标签增强（LabelFormMixin 注入） */
+        vfx("tracking", "字距");
+        vfx("stroke_width", "描边宽度");
+        vfx("stroke_color", "描边颜色");
+        vfx("stroke_only", "仅描边");
+        vfx("blend_mode", "混合模式");
+        vfx("font", "字体");
+        vfx("font_size", "字号");
+        vfx("projection", "文字投影");
+        vfx("proj_range", "投影范围");
+        vfx("proj_fade", "投影淡出");
+        vfx("gradient", "渐变");
+        vfx("gradient_start", "渐变起始");
+        vfx("gradient_end", "渐变结束");
+        vfx("gradient_angle", "渐变角度");
+
+        /* 曲线表单（CurveForm） */
+        vfx("3d curve", "3D 曲线");
+        vfx("points", "控制点");
+        vfx("point_", "点");
+        vfx("resolution", "分辨率");
+        vfx("closed", "闭合");
+        vfx("extrude_align", "挤出对齐");
+        vfx("extrude_block", "挤出方块");
+        vfx("extrude_blocks", "挤出方块");
+        vfx("extrude_connect", "挤出连接");
+        vfx("extrude_scale", "挤出缩放");
+        vfx("extrude_solid", "实心挤出");
+        vfx("extrude_spacing", "挤出间距");
+        vfx("taper_enabled", "启用锥度");
+        vfx("taper_start", "起始锥度");
+        vfx("taper_end", "结束锥度");
+        vfx("taper_curve", "锥度曲线");
+        vfx("trim_start", "裁剪起点");
+        vfx("trim_end", "裁剪终点");
+        vfx("follow_offset", "跟随偏移");
+
+        /* 拖影与动态线（ModelFormSmearChannelsMixin / WholeFormSmearMixin / PoseTransformSmearMixin） */
+        vfx("smear_frames", "涂抹帧");
+        vfx("motion_lines", "动态线");
+        vfx("smear", "拖影");
+        vfx("xavin_smear", "拖影");
+        vfx("xavin_lines", "动态线");
+        vfx("xavin_smear_x", "拖影 X");
+        vfx("xavin_smear_y", "拖影 Y");
+        vfx("xavin_smear_z", "拖影 Z");
+        vfx("xavin_smear_count", "拖影数量");
+        vfx("xavin_smear_falloff", "拖影衰减");
+        vfx("xavin_smear_dissolve", "拖影溶解");
+        vfx("xavin_smear_manual", "手动拖影");
+        vfx("xavin_smear_arc", "弧形拖影");
+        vfx("xavin_smear_time", "拖影时间");
+        vfx("xavin_smear_stretch", "拖影拉伸");
+        vfx("xavin_smear_density", "拖影密度");
+        vfx("xavin_smear_opacity", "拖影不透明度");
+        vfx("xavin_smear_lines", "拖影线条");
+        vfx("xavin_smear_lines_count", "线条数量");
+        vfx("xavin_smear_lines_width", "线条宽度");
+        vfx("xavin_smear_lines_spread", "线条扩散");
+        vfx("xavin_smear_lines_ox", "线条偏移 X");
+        vfx("xavin_smear_lines_oy", "线条偏移 Y");
+        vfx("xavin_smear_lines_oz", "线条偏移 Z");
+        vfx("xavin_smear_lines_texture", "线条纹理颜色");
+        vfx("xavin_blend_factor", "混合强度");
+        vfx("xavin_blend_mode", "混合模式");
+        vfx("blend", "混合");
+        vfx("xavin$whole", "整个模型");
+
+        /* 跟随曲线片段与 AE 跟踪 */
+        vfx("xavin_follow_curve_progress", "曲线进度");
+        vfx("xavin_follow_enabled", "跟随曲线");
+        vfx("xavin_follow_target", "跟随目标");
+        vfx("xavin_follow_align", "沿曲线对齐");
+        vfx("xavin_tracker", "AE 跟踪器");
+
+        /* 破坏盒与爆炸（DestructionBoxForm / ExplosionForm） */
+        vfx("destruction", "破坏");
+        vfx("blocks", "方块");
+        vfx("dir_pitch", "方向俯仰");
+        vfx("dir_yaw", "方向偏航");
+        vfx("dir_strength", "方向强度");
+        vfx("radial_strength", "径向强度");
+        vfx("point_mode", "点模式");
+        vfx("point_away", "远离点");
+        vfx("point_strength", "点强度");
+        vfx("point_x", "点 X");
+        vfx("point_y", "点 Y");
+        vfx("point_z", "点 Z");
+        vfx("random_amount", "随机量");
+        vfx("seed", "随机种子");
+        vfx("rotation_amount", "旋转量");
+        vfx("stagger", "错峰");
+        vfx("invert_order", "反转顺序");
+        vfx("physics_mode", "物理模式");
+        vfx("phys_gravity", "物理重力");
+        vfx("phys_ground", "地面平面");
+        vfx("phys_world", "世界碰撞");
+        vfx("phys_world_margin", "世界边距");
+        vfx("phys_duration", "物理持续时间");
+        vfx("phys_friction", "摩擦力");
+        vfx("phys_bounciness", "弹性");
+        vfx("phys_explosion", "爆炸");
+        vfx("phys_explosion_radius", "爆炸半径");
+        vfx("phys_explosion_cone", "爆炸锥形");
+        vfx("phys_wave", "释放波");
+        vfx("phys_wave_time", "波动时间");
+        vfx("phys_cluster_size", "簇大小");
+        vfx("phys_cluster_strength", "簇强度");
+        vfx("phys_support", "支撑完整性");
+        vfx("phys_shatter", "子方块碎裂");
+        vfx("phys_shatter_strength", "碎裂强度");
+        vfx("phys_max_bodies", "最大刚体数");
+
+        /* 爆炸专属 */
+        vfx("scan_radius", "扫描半径");
+        vfx("scan_hemisphere", "半球扫描");
+        vfx("wind_strength", "风力强度");
+        vfx("wind_front_speed", "前锋速度");
+        vfx("wind_decay", "风力衰减");
+        vfx("wind_hold", "风力持续");
+        vfx("wind_ambient_yaw", "环境风偏航");
+        vfx("wind_ambient", "环境风");
+        vfx("wind_suction", "吸力");
+        vfx("fire_count", "火焰数量");
+        vfx("fire_duration", "火焰持续");
+        vfx("fire_size", "火焰大小");
+        vfx("smoke_scale", "烟雾缩放");
+        vfx("dust_scale", "灰尘缩放");
+        vfx("mushroom_scale", "蘑菇云缩放");
+        vfx("shape", "形状");
+        vfx("sphere_radius", "球体半径");
+        vfx("sphere_expand", "球体扩张");
+        vfx("sphere_heat", "球体热度");
+        vfx("sphere_scale", "球体缩放");
+        vfx("spark_count", "火花数量");
+        vfx("spark_size", "火花大小");
+        vfx("spark_speed", "火花速度");
+        vfx("spark_gravity", "火花重力");
+        vfx("spark_life", "火花寿命");
+        vfx("spark_spread", "火花扩散");
+        vfx("spark_color_r", "火花颜色 R");
+        vfx("spark_color_g", "火花颜色 G");
+        vfx("spark_color_b", "火花颜色 B");
+        vfx("ground_wave", "地面冲击波");
+        vfx("world_reach", "世界破坏范围");
+        vfx("haze", "雾霾");
+        vfx("bird_count", "鸟群数量");
+        vfx("wind_streaks", "风痕");
+        vfx("bend_scan_radius", "弯曲扫描半径");
+        vfx("bend_radius", "弯曲半径");
+        vfx("bend_amount", "弯曲程度");
+        vfx("bend_fell", "树木倒下");
+        vfx("bend_gusts", "阵风");
+        vfx("bend_leaves", "落叶");
+        vfx("foliage", "植被");
+
+        /* 光束（BeamForm） */
+        vfx("progress", "进度");
+        vfx("opacity", "不透明度");
+        vfx("duration", "持续时长");
+        vfx("height", "高度");
+        vfx("radius", "半径");
+        vfx("direction", "方向");
+        vfx("color", "颜色");
+        vfx("rim_color", "边缘光颜色");
+        vfx("strands", "光束股数");
+        vfx("softness", "柔和度");
+        vfx("helix", "螺旋");
+        vfx("helix_count", "螺旋数量");
+        vfx("helix_radius", "螺旋半径");
+        vfx("helix_turns", "螺旋圈数");
+        vfx("helix_thickness", "螺旋粗细");
+        vfx("helix_spin", "螺旋旋转");
+        vfx("rings", "光环");
+        vfx("ring_max", "光环最大");
+        vfx("ring_rise", "光环上升");
+        vfx("ring_thickness", "光环粗细");
+        vfx("dashes", "虚线");
+        vfx("dash_speed", "虚线速度");
+        vfx("ground_radius", "地面半径");
+        vfx("destruct_radius", "破坏半径");
+        vfx("destruct_depth", "破坏深度");
+        vfx("impact_at", "冲击时间");
+
+        /* 穹顶（DomeForm） */
+        vfx("max_radius", "最大半径");
+        vfx("expand_at", "扩张时间");
+        vfx("lull", "静默期");
+        vfx("beam_tail", "光束尾迹");
+        vfx("beam_height", "光束高度");
+        vfx("beam_radius", "光束半径");
+        vfx("beam_fade", "光束淡出");
+        vfx("height_scale", "高度缩放");
+        vfx("rim_power", "边缘光强度");
+        vfx("fill", "填充");
+        vfx("turbulence", "湍流");
+        vfx("swirl_speed", "漩涡速度");
+        vfx("segments", "分段数");
+        vfx("rings_res", "光环分辨率");
+        vfx("lightning", "闪电");
+        vfx("dust", "灰尘");
+        vfx("flash", "闪光");
+        vfx("flash_fade", "闪光淡出");
+        vfx("impact_burst", "冲击爆发");
+        vfx("base_ring", "底部光环");
+        vfx("ring_width", "光环宽度");
+        vfx("cracks", "裂纹");
+        vfx("crack_color", "裂纹颜色");
+        vfx("crack_reach", "裂纹延伸");
+        vfx("crack_scale", "裂纹缩放");
+        vfx("crack_glow", "裂纹发光");
+        vfx("crack_depth", "裂纹深度");
+        vfx("smoke", "烟雾");
+        vfx("smoke_color", "烟雾颜色");
+        vfx("smoke_height", "烟雾高度");
+        vfx("smoke_density", "烟雾密度");
+        vfx("smoke_rise", "烟雾上升");
+        vfx("clear_span", "清空范围");
+
+        /* 风（WindForm） */
+        vfx("scanned", "已扫描");
+        vfx("wind_type", "风类型");
+        vfx("strength", "强度");
+        vfx("streaks", "风痕");
+        vfx("leaves", "落叶");
+        vfx("core_radius", "核心半径");
+        vfx("funnel_flare", "漏斗扩散");
+        vfx("funnel_height", "漏斗高度");
+        vfx("swirl", "漩涡");
+        vfx("updraft", "上升气流");
+        vfx("suction", "吸力");
+        vfx("sway", "摇摆");
+        vfx("sway_amount", "摇摆程度");
+
+        /* 冲击帧相机片段（ImpactClip）与跟随曲线片段（FollowCurveClip） */
+        vfx("silhouette", "剪影");
+        vfx("silhouette_kf", "剪影");
+        vfx("Silhouette", "剪影");
+        vfx("silColor", "剪影颜色");
+        vfx("bgColor", "背景颜色");
+        vfx("target", "目标演员");
+        vfx("silStrokes", "剪影笔触");
+        vfx("silStrokes_kf", "剪影笔触");
+        vfx("Sil strokes", "剪影笔触");
+        vfx("silStrokeAngle", "笔触角度");
+        vfx("silStrokeAngle_kf", "笔触角度");
+        vfx("Sil stroke angle", "笔触角度");
+        vfx("silStrokeLength", "笔触长度");
+        vfx("silStrokeLength_kf", "笔触长度");
+        vfx("Sil stroke length", "笔触长度");
+        vfx("silStrokeScale", "笔触缩放");
+        vfx("silStrokeScale_kf", "笔触缩放");
+        vfx("Sil stroke scale", "笔触缩放");
+        vfx("silStrokeRough", "笔触粗糙度");
+        vfx("silStrokeRough_kf", "笔触粗糙度");
+        vfx("Sil stroke rough", "笔触粗糙度");
+        vfx("inkBurst", "墨爆");
+        vfx("inkBurst_kf", "墨爆");
+        vfx("Ink burst", "墨爆");
+        vfx("inkColor", "墨迹颜色");
+        vfx("inkRadius", "墨迹半径");
+        vfx("inkRadius_kf", "墨迹半径");
+        vfx("Ink radius", "墨迹半径");
+        vfx("inkInner", "墨迹内径");
+        vfx("inkInner_kf", "墨迹内径");
+        vfx("Ink inner", "墨迹内径");
+        vfx("inkSpikes", "墨迹尖刺");
+        vfx("inkSpikes_kf", "墨迹尖刺");
+        vfx("Ink spikes", "墨迹尖刺");
+        vfx("inkRough", "墨迹粗糙度");
+        vfx("inkRough_kf", "墨迹粗糙度");
+        vfx("Ink rough", "墨迹粗糙度");
+        vfx("inkSeed", "墨迹种子");
+        vfx("inkSeed_kf", "墨迹种子");
+        vfx("Ink seed", "墨迹种子");
+        vfx("shockwave", "冲击波");
+        vfx("shockwave_kf", "冲击波");
+        vfx("Shockwave", "冲击波");
+        vfx("shockwaveProgress", "冲击波进度");
+        vfx("shockwaveProgress_kf", "冲击波进度");
+        vfx("Shockwave progress", "冲击波进度");
+        vfx("shockwaveColor", "冲击波颜色");
+        vfx("shockwaveRadius", "冲击波半径");
+        vfx("shockwaveRadius_kf", "冲击波半径");
+        vfx("Shockwave radius", "冲击波半径");
+        vfx("shockwaveWidth", "冲击波宽度");
+        vfx("shockwaveWidth_kf", "冲击波宽度");
+        vfx("Shockwave width", "冲击波宽度");
+        vfx("flashStar", "闪光星芒");
+        vfx("flashStar_kf", "闪光星芒");
+        vfx("Flash star", "闪光星芒");
+        vfx("flashStarSize", "星芒大小");
+        vfx("flashStarSize_kf", "星芒大小");
+        vfx("Flash star size", "星芒大小");
+        vfx("flashStarWidth", "星芒宽度");
+        vfx("flashStarWidth_kf", "星芒宽度");
+        vfx("Flash star width", "星芒宽度");
+        vfx("flashStarGlow", "星芒辉光");
+        vfx("flashStarGlow_kf", "星芒辉光");
+        vfx("Flash star glow", "星芒辉光");
+        vfx("flashStarRotation", "星芒旋转");
+        vfx("flashStarRotation_kf", "星芒旋转");
+        vfx("Flash star rotation", "星芒旋转");
+        vfx("flashStarColor", "星芒颜色");
+        vfx("invert", "反转");
+        vfx("invert_kf", "反转");
+        vfx("flash_kf", "闪光");
+        vfx("Flash", "闪光");
+        vfx("grayscale", "灰度");
+        vfx("grayscale_kf", "灰度");
+        vfx("Grayscale", "灰度");
+        vfx("threshold", "阈值");
+        vfx("threshold_kf", "阈值");
+        vfx("Threshold", "阈值");
+        vfx("thresholdLevel", "阈值等级");
+        vfx("thresholdLevel_kf", "阈值等级");
+        vfx("Threshold level", "阈值等级");
+        vfx("thresholdSoft", "阈值柔和度");
+        vfx("thresholdSoft_kf", "阈值柔和度");
+        vfx("Threshold soft", "阈值柔和度");
+        vfx("darkColor", "暗部颜色");
+        vfx("lightColor", "亮部颜色");
+        vfx("chroma", "色差");
+        vfx("chroma_kf", "色差");
+        vfx("Chroma", "色差");
+        vfx("focusX", "焦点 X");
+        vfx("focusX_kf", "焦点 X");
+        vfx("Focus X", "焦点 X");
+        vfx("focusY", "焦点 Y");
+        vfx("focusY_kf", "焦点 Y");
+        vfx("Focus Y", "焦点 Y");
+        vfx("zoomBlur", "缩放模糊");
+        vfx("zoomBlur_kf", "缩放模糊");
+        vfx("Zoom blur", "缩放模糊");
+        vfx("blurMode", "模糊模式");
+        vfx("zoomLines", "缩放线");
+        vfx("zoomLines_kf", "缩放线");
+        vfx("Zoom lines", "缩放线");
+        vfx("linesCount", "线条数量");
+        vfx("linesCount_kf", "线条数量");
+        vfx("Lines count", "线条数量");
+        vfx("linesThickness", "线条粗细");
+        vfx("linesThickness_kf", "线条粗细");
+        vfx("Lines thickness", "线条粗细");
+        vfx("linesInner", "线条内径");
+        vfx("linesInner_kf", "线条内径");
+        vfx("Lines inner", "线条内径");
+        vfx("linesMode", "线条模式");
+        vfx("linesSeed", "线条种子");
+        vfx("linesSeed_kf", "线条种子");
+        vfx("Lines seed", "线条种子");
+        vfx("linesColor", "线条颜色");
+        vfx("shapes", "形状");
+        vfx("shapes_kf", "形状");
+        vfx("Shapes", "形状");
+        vfx("shapesCount", "形状数量");
+        vfx("shapesCount_kf", "形状数量");
+        vfx("Shapes count", "形状数量");
+        vfx("shapesSize", "形状大小");
+        vfx("shapesSize_kf", "形状大小");
+        vfx("Shapes size", "形状大小");
+        vfx("shapesSpread", "形状扩散");
+        vfx("shapesSpread_kf", "形状扩散");
+        vfx("Shapes spread", "形状扩散");
+        vfx("centerStar", "中心星形");
+        vfx("centerStar_kf", "中心星形");
+        vfx("Center star", "中心星形");
+        vfx("centerCircle", "中心圆环");
+        vfx("centerCircle_kf", "中心圆环");
+        vfx("Center circle", "中心圆环");
+        vfx("shapesColor", "形状颜色");
+        vfx("shapesDelay", "形状延迟");
+        vfx("shapesDelay_kf", "形状延迟");
+        vfx("Shapes delay", "形状延迟");
+        vfx("align", "对齐");
+
+        /* ═══════════════════════════════════════
+           VFX LIGHTS 灯插件专属轨道（语言键前缀 bbspp.keyframe.vfxlight.）
+           点光源 / 聚光灯 / 区域光 / 环境光
+           ═══════════════════════════════════════ */
+
+        /* LightForm 基类 */
+        vfxLight("color", "颜色");
+        vfxLight("intensity", "强度");
+        vfxLight("range", "范围");
+        vfxLight("falloff_physical", "物理衰减");
+        vfxLight("use_temperature", "使用色温");
+        vfxLight("temperature", "色温");
+        vfxLight("shadows", "阴影");
+        vfxLight("shadow_softness", "阴影柔和度");
+        vfxLight("air", "空气效果");
+        vfxLight("style", "光照风格");
+        vfxLight("toon", "卡通着色");
+        vfxLight("flicker", "闪烁");
+        vfxLight("flicker_speed", "闪烁速度");
+        vfxLight("ies_profile", "IES 配光曲线");
+        vfxLight("flare", "镜头光晕");
+        vfxLight("flare_style", "光晕样式");
+        vfxLight("affect_blocks", "照亮方块");
+        vfxLight("affect_entities", "照亮实体");
+        vfxLight("groups", "灯光组");
+        vfxLight("group_filter", "组过滤");
+
+        /* 点光源 / 聚光灯 */
+        vfxLight("source_radius", "光源半径");
+        vfxLight("angle", "外锥角");
+        vfxLight("inner_angle", "内锥角");
+
+        /* 区域光 */
+        vfxLight("shape", "形状");
+        vfxLight("width", "宽度");
+        vfxLight("height", "高度");
+        vfxLight("thickness", "厚度");
+        vfxLight("two_sided", "双面发光");
+        vfxLight("spread", "扩散");
+        vfxLight("barn", "遮光板");
+
+        /* 环境光 */
+        vfxLight("mode", "模式");
+        vfxLight("volume", "体积形状");
+        vfxLight("size_x", "尺寸 X");
+        vfxLight("size_y", "尺寸 Y");
+        vfxLight("size_z", "尺寸 Z");
+        vfxLight("edge_falloff", "边缘衰减");
+        vfxLight("ground_color", "地面颜色");
+        vfxLight("occlusion", "环境遮蔽");
+
+        /* 分组轨道子键：air（空气效果） */
+        vfxLight("beam", "光束");
+        vfxLight("haze", "雾霾");
+        vfxLight("dust", "灰尘");
+        vfxLight("dust_size", "灰尘大小");
+        vfxLight("prism", "棱镜");
+        vfxLight("prism_scale", "棱镜缩放");
+        vfxLight("bounce", "反弹");
+
+        /* 分组轨道子键：style（光照风格） */
+        vfxLight("rim", "边缘光");
+        vfxLight("rim_width", "边缘光宽度");
+        vfxLight("sheen", "光泽");
+        vfxLight("translucency", "半透明");
+        vfxLight("outline", "描边");
+        vfxLight("outline_width", "描边宽度");
+        vfxLight("outline_blur", "描边模糊");
+        vfxLight("outline_inner", "内侧描边");
+        vfxLight("outline_target", "描边目标");
+        vfxLight("outline_blend", "描边混合");
+
+        /* 分组轨道子键：toon（卡通着色） */
+        vfxLight("enabled", "启用");
+        vfxLight("softness", "柔和度");
+        vfxLight("shadow_tint", "阴影色调");
+        vfxLight("shadow_level", "阴影阈值");
+
+        /* 分组轨道子键：barn（遮光板） */
+        vfxLight("top", "上");
+        vfxLight("bottom", "下");
+        vfxLight("left", "左");
+        vfxLight("right", "右");
     }
 
     private static void cn(String key, String chinese)
@@ -505,6 +763,16 @@ public class KeyframeLocalizer
     private static void videoBillboard(String key, String chinese)
     {
         VIDEO_BILLBOARD_CN.put(key, chinese);
+    }
+
+    private static void vfx(String key, String chinese)
+    {
+        VFX_CN.put(key, chinese);
+    }
+
+    private static void vfxLight(String key, String chinese)
+    {
+        VFX_LIGHT_CN.put(key, chinese);
     }
 
     /**
@@ -593,6 +861,39 @@ public class KeyframeLocalizer
     public static String localizeVideoBillboard(String key)
     {
         return localizeWithMap(key, "bbspp.keyframe.video_billboard.", VIDEO_BILLBOARD_CN);
+    }
+
+    /** 返回 BBS VFX 插件专属轨道名称（语言键前缀 bbspp.keyframe.vfx.）。 */
+    public static String localizeVFX(String key)
+    {
+        return localizeWithMap(key, "bbspp.keyframe.vfx.", VFX_CN);
+    }
+
+    /** 返回 VFX LIGHTS 灯插件专属轨道名称（语言键前缀 bbspp.keyframe.vfxlight.）。 */
+    public static String localizeVfxLight(String key)
+    {
+        return localizeWithMap(key, "bbspp.keyframe.vfxlight.", VFX_LIGHT_CN);
+    }
+
+    /**
+     * 判断轨道 id 是否为 BBS VFX 插件注入到任意 BBS 表单上的增强轨道
+     * （拖影、动态线、混合、文字增强、跟随偏移等）。
+     * 这些轨道即使所属表单不是 VFX 表单（例如 BlockForm 上的 blend 通道），
+     * 也属于 VFX 插件，应按 VFX 专属表汉化，不能依赖通用映射。
+     */
+    public static boolean isVfxEnhancementTrack(String key)
+    {
+        if (key == null || key.isEmpty())
+        {
+            return false;
+        }
+
+        if (key.startsWith("xavin_"))
+        {
+            return true;
+        }
+
+        return VFX_ENHANCEMENT_TRACKS.contains(key);
     }
 
     private static String localizeWithMap(String key, String l10nPrefix, Map<String, String> fallback)

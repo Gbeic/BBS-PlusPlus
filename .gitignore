@@ -20,3 +20,4 @@ bin/
 private/
 tools/
 .zcode/
+libs/
