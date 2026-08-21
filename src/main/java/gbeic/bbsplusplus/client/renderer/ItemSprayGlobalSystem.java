@@ -26,8 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 物品喷射的全局粒子系统与渲染设置。
  *
  * 存放所有渲染器共享的静态粒子列表与发射源映射，并在类加载时注册全局生命周期钩子
- * （模型方块源追踪、逐刻物理更新、世界渲染阶段绘制）。渲染设置读取、IRLights 阴影烘焙
- * 状态反射与广告牌矩阵工具也集中在这里，让主渲染器只负责形态自身的调度。
+ * （模型方块源追踪、逐刻物理更新、世界渲染阶段绘制）。渲染设置读取、可选灯光模组的
+ * 辅助渲染状态反射与广告牌矩阵工具也集中在这里，让主渲染器只负责形态自身的调度。
  */
 final class ItemSprayGlobalSystem
 {
@@ -45,6 +45,11 @@ final class ItemSprayGlobalSystem
     /** IRLights 未作为编译依赖引入，运行时通过反射识别它自己的阴影烘焙状态 */
     private static Method irliteShadowBakeStateIsBaking;
     private static boolean irliteShadowBakeStateChecked;
+    /** BBSVFX 与 VFXLIGHTS 均为可选依赖，运行时通过反射识别它们的离屏重渲染状态 */
+    private static Method bbsVfxForeignPassIsActive;
+    private static boolean bbsVfxForeignPassChecked;
+    private static Method vfxLightsShadowMapperIsActive;
+    private static boolean vfxLightsShadowMapperChecked;
     static long currentWorldRenderFrame;
 
     static
@@ -192,11 +197,14 @@ final class ItemSprayGlobalSystem
     }
 
     /**
-     * IRLights 阴影烘焙会用灯光矩阵重渲染模型方块，这类 pass 不能刷新物品喷射的世界坐标快照。
+     * 灯光阴影与遮罩会用离屏矩阵重渲染模型方块，这类 pass 不能刷新物品喷射的世界坐标快照。
      */
     static boolean isShadowLikePass()
     {
-        return BBSRendering.isIrisShadowPass() || isIRLiteShadowBakePass();
+        return BBSRendering.isIrisShadowPass()
+            || isIRLiteShadowBakePass()
+            || isBbsVfxForeignPass()
+            || isVfxLightsShadowPass();
     }
 
     /**
@@ -258,6 +266,61 @@ final class ItemSprayGlobalSystem
         }
 
         return null;
+    }
+
+    private static boolean isBbsVfxForeignPass()
+    {
+        if (!bbsVfxForeignPassChecked)
+        {
+            bbsVfxForeignPassChecked = true;
+            bbsVfxForeignPassIsActive = findStaticBooleanMethod(
+                "com.bbsvfx.bbsvfx.client.BbsVfxForeignPass", "isActive"
+            );
+        }
+
+        return invokeStaticBoolean(bbsVfxForeignPassIsActive);
+    }
+
+    private static boolean isVfxLightsShadowPass()
+    {
+        if (!vfxLightsShadowMapperChecked)
+        {
+            vfxLightsShadowMapperChecked = true;
+            vfxLightsShadowMapperIsActive = findStaticBooleanMethod(
+                "com.bbsvfx.vfxlights.client.shadow.ShadowMapper", "isActive"
+            );
+        }
+
+        return invokeStaticBoolean(vfxLightsShadowMapperIsActive);
+    }
+
+    private static Method findStaticBooleanMethod(String className, String methodName)
+    {
+        try
+        {
+            return Class.forName(className).getMethod(methodName);
+        }
+        catch (Throwable ignored)
+        {
+            return null;
+        }
+    }
+
+    private static boolean invokeStaticBoolean(Method method)
+    {
+        if (method == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            return Boolean.TRUE.equals(method.invoke(null));
+        }
+        catch (Throwable ignored)
+        {
+            return false;
+        }
     }
 
     /**

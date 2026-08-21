@@ -1,6 +1,7 @@
 {
     "required": false,
     "package": "gbeic.bbsplusplus.mixin.irlite",
+    "plugin": "gbeic.bbsplusplus.compat.irlite.IRLiteMixinPlugin",
     "compatibilityLevel": "JAVA_17",
     "client": [
         "IRLiteBbsCasterSourceMixin",

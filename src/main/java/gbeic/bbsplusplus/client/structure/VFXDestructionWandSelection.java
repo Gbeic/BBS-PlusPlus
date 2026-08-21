@@ -32,20 +32,27 @@ import net.minecraft.world.RaycastContext;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BBS VFX 破坏魔杖的选区增强。
  * <p>
  * VFX 原版魔杖只在方块交互回调里用潜行 / 非潜行区分两个点，既没有拖拽预览也没有
  * 清晰的端点反馈。这里沿用结构棒的交互思路，在 BBS++ 客户端侧接管
- * {@code xavin:destruction_wand}：长按使用键拖拽选区，短按使用键移动起点，短按攻击键
+ * 新版 {@code bbsvfx:destruction_wand} 与旧版 {@code xavin:destruction_wand}：长按使用键拖拽选区，短按使用键移动起点，短按攻击键
  * 移动终点，长按攻击键清除选区，并把最终选区同步回 VFX 的
- * {@code org.xavin.xavin.DestructionSelection} 静态字段，供原插件的“捕获破坏盒”按钮读取。
+ * {@code DestructionSelection} 静态字段，供原插件的“捕获破坏盒”按钮读取。
  * </p>
  */
 public final class VFXDestructionWandSelection
 {
-    private static final Identifier DESTRUCTION_WAND = new Identifier("xavin", "destruction_wand");
+    private static final Identifier BBSVFX_DESTRUCTION_WAND = new Identifier("bbsvfx", "destruction_wand");
+    private static final Identifier XAVIN_DESTRUCTION_WAND = new Identifier("xavin", "destruction_wand");
+    private static final String[] VFX_SELECTION_CLASSES = {
+        "com.bbsvfx.bbsvfx.DestructionSelection",
+        "org.xavin.xavin.DestructionSelection"
+    };
 
     /** 按住使用键超过这么多 tick 才算拖拽，否则视为单击 */
     private static final int HOLD_THRESHOLD_TICKS = 8;
@@ -83,8 +90,7 @@ public final class VFXDestructionWandSelection
     private static int soundCooldown;
     private static float dragPitch = 1.0F;
 
-    private static Field vfxPos1;
-    private static Field vfxPos2;
+    private static final List<Field[]> VFX_SELECTION_FIELDS = new ArrayList<>();
     private static boolean reflectionResolved;
     private static boolean reflectionAvailable;
 
@@ -117,7 +123,14 @@ public final class VFXDestructionWandSelection
 
     public static boolean isDestructionWand(ItemStack stack)
     {
-        return stack != null && DESTRUCTION_WAND.equals(Registries.ITEM.getId(stack.getItem()));
+        if (stack == null)
+        {
+            return false;
+        }
+
+        Identifier itemId = Registries.ITEM.getId(stack.getItem());
+
+        return BBSVFX_DESTRUCTION_WAND.equals(itemId) || XAVIN_DESTRUCTION_WAND.equals(itemId);
     }
 
     private static void tick(MinecraftClient client)
@@ -340,15 +353,23 @@ public final class VFXDestructionWandSelection
             return;
         }
 
-        try
+        boolean synchronizedAny = false;
+
+        for (Field[] fields : VFX_SELECTION_FIELDS)
         {
-            vfxPos1.set(null, start);
-            vfxPos2.set(null, end);
+            try
+            {
+                fields[0].set(null, start);
+                fields[1].set(null, end);
+                synchronizedAny = true;
+            }
+            catch (Exception ignored)
+            {
+                // 某个兼容版本同步失败时，继续尝试另一个已加载版本。
+            }
         }
-        catch (Exception e)
-        {
-            reflectionAvailable = false;
-        }
+
+        reflectionAvailable = synchronizedAny;
     }
 
     private static boolean resolveReflection()
@@ -360,18 +381,24 @@ public final class VFXDestructionWandSelection
 
         reflectionResolved = true;
 
-        try
+        for (String className : VFX_SELECTION_CLASSES)
         {
-            Class<?> selection = Class.forName("org.xavin.xavin.DestructionSelection");
+            try
+            {
+                Class<?> selection = Class.forName(className);
 
-            vfxPos1 = selection.getField("pos1");
-            vfxPos2 = selection.getField("pos2");
-            reflectionAvailable = true;
+                VFX_SELECTION_FIELDS.add(new Field[] {
+                    selection.getField("pos1"),
+                    selection.getField("pos2")
+                });
+            }
+            catch (Exception ignored)
+            {
+                // 未安装对应版本时继续尝试另一个包名。
+            }
         }
-        catch (Exception e)
-        {
-            reflectionAvailable = false;
-        }
+
+        reflectionAvailable = !VFX_SELECTION_FIELDS.isEmpty();
 
         return reflectionAvailable;
     }

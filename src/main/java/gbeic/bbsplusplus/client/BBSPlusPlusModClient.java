@@ -273,13 +273,15 @@ public class BBSPlusPlusModClient implements ClientModInitializer
     /**
      * 注册 BBS VFX 破坏魔杖的手感增强。
      * <p>
-     * 该功能只在 {@code xavin} 已加载时启用，并且通过物品 ID 与反射对接 VFX，
-     * 避免 BBS++ 对第三方插件形成硬依赖。
+     * 该功能在新版 {@code bbsvfx} 或旧版 {@code xavin} 已加载时启用，并且通过物品 ID
+     * 与反射对接 VFX，避免 BBS++ 对第三方插件形成硬依赖。
      * </p>
      */
     private void registerVFXDestructionWand()
     {
-        if (!FabricLoader.getInstance().isModLoaded("xavin"))
+        FabricLoader loader = FabricLoader.getInstance();
+
+        if (!loader.isModLoaded("bbsvfx") && !loader.isModLoaded("xavin"))
         {
             return;
         }

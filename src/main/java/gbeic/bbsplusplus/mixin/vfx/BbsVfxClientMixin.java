@@ -2,14 +2,19 @@ package gbeic.bbsplusplus.mixin.vfx;
 
 import com.bbsvfx.bbsvfx.client.BbsVfxClient;
 import gbeic.bbsplusplus.compat.vfx.VfxCoreShaderRegistrationGuard;
+import gbeic.bbsplusplus.client.structure.VFXDestructionWandSelection;
 import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * 修正 BBSVFX 核心着色器回调在单次资源重载中被重复执行的问题。
- * 通过包装其 Fabric 事件监听器实现单轮去重，不修改 BBSVFX 的渲染参数与程序回调。
+ * 修正 BBSVFX 核心着色器回调重复执行，并接管新版破坏魔杖的选区边框显示条件。
+ * 着色器回调通过包装 Fabric 事件监听器实现单轮去重，魔杖边框则只在玩家手持时显示。
  */
 @Mixin(value = BbsVfxClient.class, remap = false)
 public class BbsVfxClientMixin
@@ -32,5 +37,19 @@ public class BbsVfxClientMixin
         }
 
         return listener;
+    }
+
+    /**
+     * 注入目标：新版 {@code BbsVfxClient#renderSelection(WorldRenderContext)} 入口。
+     * 注入原因：BBSVFX 原实现不检查玩家是否还手持破坏魔杖，选区完整时会一直显示预览边框。
+     * 修改行为：未手持破坏魔杖时取消 VFX 自带边框渲染，选区数据仍保留给捕获功能使用。
+     */
+    @Inject(method = "renderSelection", at = @At("HEAD"), cancellable = true)
+    private void bbspp$hideSelectionWithoutWand(WorldRenderContext context, CallbackInfo ci)
+    {
+        if (!VFXDestructionWandSelection.shouldRenderSelection(MinecraftClient.getInstance()))
+        {
+            ci.cancel();
+        }
     }
 }

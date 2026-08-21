@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * 接管 BBS VFX 破坏魔杖的原版选区边框显示条件。
+ * 接管旧版 Xavin 破坏魔杖的原版选区边框显示条件。
  * <p>
- * VFX 自己会在 {@code XavinClient#renderSelection} 中只要选区完整就绘制红色破坏盒，
+ * 旧版 VFX 会在 {@code XavinClient#renderSelection} 中只要选区完整就绘制红色破坏盒，
  * 导致玩家切走魔杖后仍能看到预览边框。这里只在渲染入口做取消处理，
  * 保留 {@code DestructionSelection} 里的选区数据，避免影响“从魔杖选区捕获破坏盒”。
  * </p>
