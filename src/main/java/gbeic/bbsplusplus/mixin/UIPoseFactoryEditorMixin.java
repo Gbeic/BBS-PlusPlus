@@ -4,6 +4,7 @@ import gbeic.bbsplusplus.client.ui.pose.IPoseParameterBrush;
 import gbeic.bbsplusplus.client.ui.pose.IPoseParameterBrushHost;
 import gbeic.bbsplusplus.client.ui.pose.PoseParameterBrushState;
 import mchorse.bbs_mod.l10n.L10n;
+import mchorse.bbs_mod.l10n.keys.IKey;
 import mchorse.bbs_mod.ui.Keys;
 import mchorse.bbs_mod.ui.framework.elements.IUIElement;
 import mchorse.bbs_mod.ui.framework.elements.UIElement;
@@ -23,12 +24,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 为影片编辑器的姿势关键帧骨骼列表加入一次性参数刷。
  *
- * <p>该类在启用参数刷时把主选骨骼的完整参数交给时间轴会话保存，随后由列表点选和
- * 模型视图点选共同调用统一目标入口。关键帧编辑器即使被重建，也能从稳定宿主恢复格式刷；
- * 写入仍通过 BBS 的关键帧通知流程完成，从而保留多关键帧编辑与撤销历史。</p>
+ * <p>单选骨骼时沿用列表与模型视图点选目标的一次性格式刷；多选骨骼时把每根骨骼的
+ * 独立快照交给时间轴会话保存，并在兼容目标帧通过标题栏按钮按名称批量写入。关键帧
+ * 编辑器即使被重建，也能从稳定宿主恢复两种格式刷状态。</p>
  */
 @Mixin(UIPoseKeyframeFactory.UIPoseFactoryEditor.class)
 public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
@@ -52,8 +58,9 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
     {
         UIPoseKeyframeFactory.UIPoseFactoryEditor self = (UIPoseKeyframeFactory.UIPoseFactoryEditor) (Object) this;
 
-        this.bbspp$parameterBrushButton = new UIIcon(Icons.COPY, (button) -> this.bbspp$toggleParameterBrush());
-        this.bbspp$parameterBrushButton.tooltip(L10n.lang("bbspp.ui.pose.parameter_brush_tooltip"));
+        this.bbspp$parameterBrushButton = new UIIcon(this::bbspp$getParameterBrushIcon,
+            (button) -> this.bbspp$handleParameterBrushButton());
+        this.bbspp$parameterBrushButton.tooltip((IKey) this::bbspp$getParameterBrushTooltip);
         this.bbspp$parameterBrushButton.activeColor(Colors.opaque(Colors.GREEN));
         this.bbspp$parameterBrushButton.active(this.bbspp$isParameterBrushArmed());
 
@@ -73,19 +80,31 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
     }
 
     @Unique
-    private void bbspp$toggleParameterBrush()
+    private void bbspp$handleParameterBrushButton()
     {
         if (this.bbspp$isParameterBrushArmed())
         {
+            PoseParameterBrushState state = this.bbspp$getParameterBrushState();
+
+            if (state != null && state.isBatchDestination(this.keyframe, this.bbspp$getCurrentSheet()))
+            {
+                if (this.bbspp$applyParameterBrushBatch(state))
+                {
+                    this.bbspp$cancelParameterBrush();
+                }
+
+                return;
+            }
+
             this.bbspp$cancelParameterBrush();
 
             return;
         }
 
         UIPoseKeyframeFactory.UIPoseFactoryEditor self = (UIPoseKeyframeFactory.UIPoseFactoryEditor) (Object) this;
-        String source = self.getGroup();
+        List<String> selected = new ArrayList<>(self.groups.list.getCurrent());
 
-        if (source == null || source.isEmpty() || !self.hasBone(source))
+        if (selected.isEmpty())
         {
             return;
         }
@@ -97,9 +116,17 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
             return;
         }
 
-        PoseTransform sourceTransform = self.getPose().transforms.get(source);
+        Map<String, PoseTransform> snapshots = new LinkedHashMap<>();
 
-        state.arm(this.keyframe, this.bbspp$getCurrentSheet(), source, sourceTransform);
+        for (String bone : selected)
+        {
+            if (bone != null && !bone.isEmpty() && self.hasBone(bone))
+            {
+                snapshots.put(bone, self.getPose().transforms.get(bone));
+            }
+        }
+
+        state.arm(this.keyframe, this.bbspp$getCurrentSheet(), snapshots);
         this.bbspp$parameterBrushButton.active(state.isArmed());
     }
 
@@ -143,6 +170,12 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
             return Result.IGNORED;
         }
 
+        /* 多骨骼模式的目标是整张姿势帧，骨骼点选只保留原版选择行为。 */
+        if (state.isBatch())
+        {
+            return Result.IGNORED;
+        }
+
         if (state.isSource(this.keyframe, sheet, bone))
         {
             return Result.SOURCE;
@@ -165,11 +198,28 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
     }
 
     @Override
+    public boolean bbspp$isParameterBrushBatch()
+    {
+        PoseParameterBrushState state = this.bbspp$getParameterBrushState();
+
+        return state != null && state.isBatch()
+            && state.isCompatible(this.keyframe, this.bbspp$getCurrentSheet());
+    }
+
+    @Override
     public boolean bbspp$isParameterBrushSource(String bone)
     {
         PoseParameterBrushState state = this.bbspp$getParameterBrushState();
 
         return state != null && state.isSource(this.keyframe, this.bbspp$getCurrentSheet(), bone);
+    }
+
+    @Override
+    public boolean bbspp$isParameterBrushTarget(String bone)
+    {
+        PoseParameterBrushState state = this.bbspp$getParameterBrushState();
+
+        return state != null && state.isBatchTarget(this.keyframe, this.bbspp$getCurrentSheet(), bone);
     }
 
     @Override
@@ -195,5 +245,83 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
         return this.editor == null || this.keyframe == null
             ? null
             : this.editor.getGraph().getSheet(this.keyframe);
+    }
+
+    @Unique
+    private mchorse.bbs_mod.ui.utils.icons.Icon bbspp$getParameterBrushIcon()
+    {
+        PoseParameterBrushState state = this.bbspp$getParameterBrushState();
+
+        return state != null && state.isBatchDestination(this.keyframe, this.bbspp$getCurrentSheet())
+            ? Icons.PASTE
+            : Icons.COPY;
+    }
+
+    @Unique
+    private String bbspp$getParameterBrushTooltip()
+    {
+        PoseParameterBrushState state = this.bbspp$getParameterBrushState();
+
+        if (state != null && state.isBatch())
+        {
+            String key = state.isBatchDestination(this.keyframe, this.bbspp$getCurrentSheet())
+                ? "bbspp.ui.pose.parameter_brush_batch_paste"
+                : "bbspp.ui.pose.parameter_brush_batch_source";
+
+            return L10n.lang(key).format(state.size()).get();
+        }
+
+        return L10n.lang("bbspp.ui.pose.parameter_brush_tooltip").get();
+    }
+
+    @Unique
+    private boolean bbspp$applyParameterBrushBatch(PoseParameterBrushState state)
+    {
+        UIPoseKeyframeFactory.UIPoseFactoryEditor self = (UIPoseKeyframeFactory.UIPoseFactoryEditor) (Object) this;
+        List<Map.Entry<String, PoseTransform>> targets = new ArrayList<>();
+        boolean applied = false;
+
+        for (Map.Entry<String, PoseTransform> entry : state.getSnapshots().entrySet())
+        {
+            if (self.hasBone(entry.getKey()))
+            {
+                targets.add(entry);
+            }
+        }
+
+        if (targets.isEmpty())
+        {
+            return false;
+        }
+
+        for (UIKeyframeSheet sheet : this.editor.getGraph().getSheets())
+        {
+            for (Keyframe<?> selected : sheet.selection.getSelected())
+            {
+                if (!state.isCompatible(selected, sheet) || state.isSourceKeyframe(selected)
+                    || !(selected.getValue() instanceof Pose pose))
+                {
+                    continue;
+                }
+
+                /* 每个目标关键帧只通知一次，整组骨骼形成一次批量修改。 */
+                selected.preNotify();
+
+                for (Map.Entry<String, PoseTransform> target : targets)
+                {
+                    pose.get(target.getKey()).copy(target.getValue());
+                }
+
+                selected.postNotify();
+                applied = true;
+            }
+        }
+
+        if (applied)
+        {
+            self.restoreSelection(new ArrayList<>(self.groups.list.getCurrent()));
+        }
+
+        return applied;
     }
 }

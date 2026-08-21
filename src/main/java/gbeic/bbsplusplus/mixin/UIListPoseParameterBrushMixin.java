@@ -258,12 +258,17 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
         int markerY = y + self.scroll.scrollItemSize / 2;
 
         boolean source = brush.bbspp$isParameterBrushSource(bone);
+        boolean batch = brush.bbspp$isParameterBrushBatch();
 
         if (source)
         {
             context.batcher.icon(Icons.COPY, Colors.opaque(Colors.GREEN), brushIconX, markerY, 0.5F, 0.5F);
         }
-        else if (hover && brush.bbspp$isParameterBrushArmed())
+        else if (batch && brush.bbspp$isParameterBrushTarget(bone))
+        {
+            context.batcher.icon(Icons.PASTE, Colors.opaque(Colors.GREEN), brushIconX, markerY, 0.5F, 0.5F);
+        }
+        else if (!batch && hover && brush.bbspp$isParameterBrushArmed())
         {
             context.batcher.icon(Icons.PASTE, Colors.opaque(Colors.GREEN), brushIconX, markerY, 0.5F, 0.5F);
         }

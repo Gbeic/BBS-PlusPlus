@@ -227,6 +227,8 @@
     "bbspp.undo_history.property.hunger": "Hunger",
     "bbspp.undo_history.property.xp_level": "XP level",
     "bbspp.undo_history.property.xp_progress": "XP progress",
-    "bbspp.ui.pose.parameter_brush_tooltip": "Bone Parameter Brush\n\nSave all parameters from the primary selected bone, then click another bone in the list or model viewport to paste them. The brush exits after one use; press Esc to cancel. An orange diamond indicates that the bone has changes in the current pose keyframe",
+    "bbspp.ui.pose.parameter_brush_tooltip": "Bone Parameter Brush\n\nWith one bone selected, click any target bone in the list or model viewport to paste. With multiple bones selected, switch to a target pose keyframe and use this button to paste by bone name. The brush exits after a successful paste; press Esc to cancel. An orange diamond indicates changes in the current pose keyframe",
+    "bbspp.ui.pose.parameter_brush_batch_source": "%s bones copied\n\nSwitch to a target pose keyframe of the same model, then click here to paste by bone name; press Esc to cancel",
+    "bbspp.ui.pose.parameter_brush_batch_paste": "Paste %s bones\n\nWrite them by bone name to the currently selected compatible pose keyframes, then exit the brush",
     "bbspp.ui.pose.parameter_brush_cancel": "Cancel bone parameter brush"
 }
