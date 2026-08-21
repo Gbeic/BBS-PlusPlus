@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import gbeic.bbsplusplus.client.compat.shadercurves.ShaderCurveDebug;
 import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
+import gbeic.bbsplusplus.client.debug.VideoDebug;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -24,7 +25,8 @@ public class DebugCommandModule implements BBSPlusPlusCommandModule
 {
     private static final List<DebugModule> MODULES = List.of(
         new DebugModule("shader_curves", "光影曲线", ShaderCurveDebug::isShaderCurvePatches, ShaderCurveDebug::setShaderCurvePatches),
-        new DebugModule("item_spray", "物品喷射", ItemSprayDebug::isEnabled, ItemSprayDebug::setEnabled)
+        new DebugModule("item_spray", "物品喷射", ItemSprayDebug::isEnabled, ItemSprayDebug::setEnabled),
+        new DebugModule("video", "视频伪装", VideoDebug::isEnabled, VideoDebug::setEnabled)
     );
 
     @Override

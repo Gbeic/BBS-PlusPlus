@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import gbeic.bbsplusplus.client.debug.VideoDebug;
 import gbeic.bbsplusplus.forms.VideoBillboardForm;
 import mchorse.bbs_mod.BBSSettings;
 import mchorse.bbs_mod.forms.ITickable;
@@ -26,6 +27,8 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.util.Locale;
+
 /**
  * 视频广告牌形态渲染器。
  *
@@ -44,6 +47,8 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
     private long lastPreviewTime;
     private double lastPreviewSeconds;
     private long lastScrubRenderNanos;
+    /** 上一次记录的请求秒数，用于在日志里标出时间轴跳变（会触发 native seek）。 */
+    private double lastDebugSeconds = Double.NaN;
 
     public VideoBillboardFormRenderer(VideoBillboardForm form)
     {
@@ -112,8 +117,25 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
         {
             try
             {
+                long debugStart = System.nanoTime();
+
                 this.decoder.renderTime(seconds);
                 this.lastScrubRenderNanos = now;
+
+                // 记录本帧的寻帧阻塞耗时（含 GL 纹理上传与 CUDA 同步），并标出时间轴跳变。
+                if (VideoDebug.isEnabled())
+                {
+                    long costNanos = System.nanoTime() - debugStart;
+
+                    if (!Double.isNaN(this.lastDebugSeconds) && Math.abs(seconds - this.lastDebugSeconds) > 0.25D)
+                    {
+                        VideoDebug.log("[跳变] " + formatSeconds(this.lastDebugSeconds) + " -> " + formatSeconds(seconds));
+                    }
+
+                    this.lastDebugSeconds = seconds;
+                    VideoDebug.log("[帧] 秒=" + formatSeconds(seconds) + " 耗时="
+                        + String.format(Locale.ROOT, "%.2f", costNanos / 1_000_000D) + "ms");
+                }
             }
             catch (Exception e)
             {
@@ -169,6 +191,9 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
             this.decoder = VideoBackendBridge.openAssetVideo(path);
             this.currentPath = path;
             this.applyMetadataSize();
+
+            VideoDebug.log("[打开] " + path + " 宽=" + this.decoder.getWidth() + " 高=" + this.decoder.getHeight()
+                + " 时长=" + formatSeconds(this.decoder.getDurationSeconds()) + "s");
 
             return true;
         }
@@ -380,15 +405,22 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
             .next();
     }
 
+    private static String formatSeconds(double seconds)
+    {
+        return String.format(Locale.ROOT, "%.3f", seconds);
+    }
+
     private void closeDecoder()
     {
         if (this.decoder != null)
         {
+            VideoDebug.log("[关闭] " + this.currentPath);
             this.decoder.close();
             this.decoder = null;
         }
 
         this.currentPath = null;
+        this.lastDebugSeconds = Double.NaN;
     }
 
     @Override
