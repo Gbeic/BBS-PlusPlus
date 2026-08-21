@@ -12,6 +12,7 @@ import gbeic.bbsplusplus.client.structure.StructureStickSelection;
 import gbeic.bbsplusplus.client.structure.StructureStickTooltip;
 import gbeic.bbsplusplus.client.structure.VFXDestructionWandSelection;
 import gbeic.bbsplusplus.client.structure.VFXDestructionWandTooltip;
+import gbeic.bbsplusplus.client.audio.AudioOutputDeviceWatcher;
 import gbeic.bbsplusplus.client.ui.forms.editors.forms.UIAAAParticleForm;
 import gbeic.bbsplusplus.client.ui.forms.editors.forms.UIStructureForm;
 import gbeic.bbsplusplus.structure.StructureStickRegistry;
@@ -46,9 +47,12 @@ public class BBSPlusPlusModClient implements ClientModInitializer
         // 注册到 BBS 事件总线，接收 @Subscribe 事件
         BBSMod.events.register(this);
 
-        // 自动旁观模式异常退出兜底：启动后检测残留状态，关闭前尽量恢复。
+// 自动旁观模式异常退出兜底：启动后检测残留状态，关闭前尽量恢复。
         ClientTickEvents.END_CLIENT_TICK.register(FilmAutoGameModeRestoreState::tick);
         ClientLifecycleEvents.CLIENT_STOPPING.register(FilmAutoGameModeRestoreState::tryRestoreBeforeShutdown);
+
+        // 监听音频输出设备切换（例如外放切耳机），自动刷新 BBS 音频缓存，避免音频 clip 静音。
+        ClientTickEvents.END_CLIENT_TICK.register(AudioOutputDeviceWatcher::tick);
 
         boolean hasAAAParticles = FabricLoader.getInstance().isModLoaded("aaa_particles");
 
