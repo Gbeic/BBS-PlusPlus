@@ -729,14 +729,4 @@ public class KeyframeLocalizer
 
         return null;
     }
-
-    /**
-     * 返回指定键的中文名称，若无翻译则返回原键。
-     */
-    public static String localizeOrOriginal(String key)
-    {
-        String localized = localize(key);
-
-        return localized != null ? localized : key;
-    }
 }
