@@ -72,14 +72,19 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
             return;
         }
 
-        try
+        /* 拖动播放头时保持上一帧，松手后的下一次画面渲染才对最终时间执行一次寻帧。
+         * 编辑器的拾取缓冲还会额外渲染一次实体，它只负责鼠标命中，不能重复驱动解码器。 */
+        if (!VideoTimelineState.isScrubbing() && !context.isPicking())
         {
-            this.decoder.renderTime(seconds);
-        }
-        catch (Exception e)
-        {
-            this.closeDecoder();
-            return;
+            try
+            {
+                this.decoder.renderTime(seconds);
+            }
+            catch (Exception e)
+            {
+                this.closeDecoder();
+                return;
+            }
         }
 
         int textureId = this.decoder.getTextureId();
@@ -183,7 +188,9 @@ public class VideoBillboardFormRenderer extends FormRenderer<VideoBillboardForm>
         }
         else
         {
-            base = this.form.offsetSeconds.get() + this.currentTick / 20D * this.form.speed.get();
+            int timelineTick = VideoTimelineState.getFilmTick(this.currentTick);
+
+            base = this.form.offsetSeconds.get() + timelineTick / 20D * this.form.speed.get();
         }
 
         return this.applyRange(base);

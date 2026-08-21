@@ -1,5 +1,6 @@
 package gbeic.bbsplusplus.mixin;
 
+import gbeic.bbsplusplus.client.renderer.VideoTimelineState;
 import mchorse.bbs_mod.graphics.window.Window;
 import mchorse.bbs_mod.ui.film.replays.UIReplaysEditor;
 import mchorse.bbs_mod.ui.film.utils.keyframes.UIFilmKeyframes;
@@ -56,6 +57,7 @@ public class UIReplaysEditorHeaderBlockerMixin
                         && !Window.isAltPressed())
                     {
                         UIReplaysEditorHeaderBlockerMixin.this.bbspp$scrubbingRuler = true;
+                        VideoTimelineState.beginScrubbing(UIReplaysEditorHeaderBlockerMixin.this);
                         UIReplaysEditorHeaderBlockerMixin.this.bbspp$updateRulerCursor(self, context);
                     }
 
@@ -75,6 +77,7 @@ public class UIReplaysEditorHeaderBlockerMixin
                 if (UIReplaysEditorHeaderBlockerMixin.this.bbspp$scrubbingRuler)
                 {
                     UIReplaysEditorHeaderBlockerMixin.this.bbspp$scrubbingRuler = false;
+                    VideoTimelineState.endScrubbing(UIReplaysEditorHeaderBlockerMixin.this);
 
                     return true;
                 }
@@ -127,6 +130,7 @@ public class UIReplaysEditorHeaderBlockerMixin
         if (self.keyframeEditor == null || !(self.keyframeEditor.view instanceof UIFilmKeyframes keyframes) || keyframes.editor == null)
         {
             this.bbspp$scrubbingRuler = false;
+            VideoTimelineState.endScrubbing(this);
 
             return;
         }

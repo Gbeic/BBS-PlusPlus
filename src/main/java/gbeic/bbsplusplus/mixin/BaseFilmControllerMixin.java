@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.mixin;
 
 import gbeic.bbsplusplus.client.WorldFilmShaderCurveState;
+import gbeic.bbsplusplus.client.renderer.VideoTimelineState;
 import gbeic.bbsplusplus.keyframes.EquipmentTransformRuntime;
 import io.netty.util.collection.IntObjectMap;
 import mchorse.bbs_mod.film.BaseFilmController;
@@ -11,6 +12,7 @@ import mchorse.bbs_mod.film.WorldFilmController;
 import mchorse.bbs_mod.forms.entities.IEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +40,38 @@ public abstract class BaseFilmControllerMixin {
 
     @Shadow(remap = false)
     protected abstract float getTransition(IEntity entity, float transition);
+
+    /**
+     * 注入目标：{@code BaseFilmController#renderEntity(WorldRenderContext, Replay, IEntity)} 开始处。
+     * 注入原因：实体 age 在编辑器向后跳转时仍只会递增，不能代表影片播放头时间。
+     * 修改行为：在形态渲染期间暴露当前回放的真实局部 tick，让视频能够按播放头正向或反向寻帧。
+     */
+    @Inject(
+        method = "renderEntity(Lnet/fabricmc/fabric/api/client/rendering/v1/WorldRenderContext;Lmchorse/bbs_mod/film/replays/Replay;Lmchorse/bbs_mod/forms/entities/IEntity;)V",
+        at = @At("HEAD"),
+        remap = false
+    )
+    private void bbspp$beginVideoTimelineRender(WorldRenderContext context, Replay replay, IEntity entity, CallbackInfo ci)
+    {
+        int tick = replay == null ? this.getTick() : replay.getTick(this.getTick());
+
+        VideoTimelineState.beginFilmRender(tick);
+    }
+
+    /**
+     * 注入目标：{@code BaseFilmController#renderEntity(WorldRenderContext, Replay, IEntity)} 返回处。
+     * 注入原因：真实影片 tick 只应影响当前演员的形态渲染，不能泄漏到普通实体或表单预览。
+     * 修改行为：当前演员渲染结束后立即清除影片时间上下文。
+     */
+    @Inject(
+        method = "renderEntity(Lnet/fabricmc/fabric/api/client/rendering/v1/WorldRenderContext;Lmchorse/bbs_mod/film/replays/Replay;Lmchorse/bbs_mod/forms/entities/IEntity;)V",
+        at = @At("RETURN"),
+        remap = false
+    )
+    private void bbspp$endVideoTimelineRender(WorldRenderContext context, Replay replay, IEntity entity, CallbackInfo ci)
+    {
+        VideoTimelineState.endFilmRender();
+    }
 
     /**
      * 注入目标：{@code BaseFilmController#startRenderFrame(float)} 结束处。

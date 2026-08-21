@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.mixin;
 
 import gbeic.bbsplusplus.BBSAddonsSettings;
+import gbeic.bbsplusplus.client.renderer.VideoTimelineState;
 import gbeic.bbsplusplus.util.ClipOverlapFixer;
 import mchorse.bbs_mod.BBSSettings;
 import mchorse.bbs_mod.graphics.window.Window;
@@ -72,6 +73,9 @@ public class UIClipsMixin
 
     @Shadow
     private boolean scrolling;
+
+    @Shadow
+    private boolean scrubbing;
 
     @Shadow
     private int grabMode;
@@ -369,6 +373,20 @@ public class UIClipsMixin
     }
 
     /**
+     * 注入目标：{@code UIClips#handleLeftClick} 返回处。
+     * 注入原因：原版播放头拖动会连续修改影片 cursor，视频若同步寻帧会阻塞编辑器。
+     * 修改行为：确认进入 scrubbing 后通知视频渲染器保持当前画面，直到鼠标释放。
+     */
+    @Inject(method = "handleLeftClick", at = @At("RETURN"))
+    private void bbspp$beginVideoScrubbing(UIContext context, int mouseX, int mouseY, boolean ctrl, boolean shift, boolean alt, CallbackInfoReturnable<Boolean> cir)
+    {
+        if (this.scrubbing)
+        {
+            VideoTimelineState.beginScrubbing(this);
+        }
+    }
+
+    /**
      * 注入目标：{@code UIClips#dragClips(int, int)} 开始处。
      * 注入原因：标尺穿透修复会把鼠标坐标限制在轨道视口内，拖到上下边缘后无法继续访问隐藏轨道。
      * 修改行为：移动整个剪辑且鼠标进入边缘区域时，按靠近边缘的程度平滑滚动纵向轨道；
@@ -509,6 +527,7 @@ public class UIClipsMixin
     @Inject(method = "subMouseReleased", at = @At("TAIL"))
     private void bbspp$clearInitialDragLayer(UIContext context, CallbackInfoReturnable<Boolean> cir)
     {
+        VideoTimelineState.endScrubbing(this);
         this.bbspp$resetDragState();
     }
 
