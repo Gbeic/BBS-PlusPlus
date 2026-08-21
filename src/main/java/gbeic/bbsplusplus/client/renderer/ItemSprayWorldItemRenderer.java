@@ -34,7 +34,7 @@ final class ItemSprayWorldItemRenderer
     private ItemSprayWorldItemRenderer()
     {}
 
-    static void renderItems(net.minecraft.client.util.math.MatrixStack stack, List<ItemSprayFormRenderer.SprayedItem> items, float tickDelta, World world, int fallbackLight, int overlay, Vec3d cameraPos)
+    static void renderItems(net.minecraft.client.util.math.MatrixStack stack, List<SprayedItem> items, float tickDelta, World world, int fallbackLight, int overlay, Vec3d cameraPos)
     {
         if (items.isEmpty())
         {
@@ -47,7 +47,7 @@ final class ItemSprayWorldItemRenderer
         renderCollectedItems(stack, candidates, tickDelta, world, fallbackLight, overlay, cameraPos);
     }
 
-    static void renderWorldItems(net.minecraft.client.util.math.MatrixStack stack, float tickDelta, World world, int fallbackLight, int overlay, Vec3d cameraPos, Frustum frustum, int maxRenderedItems, double maxDistanceSq, List<ItemSprayFormRenderer.SprayedItem> globalItems, List<ItemSprayFormRenderer.SprayedItem> deterministicWorldItems)
+    static void renderWorldItems(net.minecraft.client.util.math.MatrixStack stack, float tickDelta, World world, int fallbackLight, int overlay, Vec3d cameraPos, Frustum frustum, int maxRenderedItems, double maxDistanceSq, List<SprayedItem> globalItems, List<SprayedItem> deterministicWorldItems)
     {
         int total = globalItems.size() + deterministicWorldItems.size();
 
@@ -77,11 +77,11 @@ final class ItemSprayWorldItemRenderer
         renderCollectedItems(stack, candidates, tickDelta, world, fallbackLight, overlay, cameraPos);
     }
 
-    private static long collectRenderCandidates(List<RenderCandidate> candidates, List<ItemSprayFormRenderer.SprayedItem> items, float tickDelta, Vec3d cameraPos, Frustum frustum, double maxDistanceSq, long startOrder)
+    private static long collectRenderCandidates(List<RenderCandidate> candidates, List<SprayedItem> items, float tickDelta, Vec3d cameraPos, Frustum frustum, double maxDistanceSq, long startOrder)
     {
         long order = startOrder;
 
-        for (ItemSprayFormRenderer.SprayedItem item : items)
+        for (SprayedItem item : items)
         {
             float scale = item.getRenderScale(tickDelta);
 
@@ -126,7 +126,7 @@ final class ItemSprayWorldItemRenderer
         {
             for (RenderCandidate candidate : candidates)
             {
-                ItemSprayFormRenderer.SprayedItem item = candidate.item;
+                SprayedItem item = candidate.item;
                 double x = candidate.x;
                 double y = candidate.y;
                 double z = candidate.z;
@@ -161,7 +161,7 @@ final class ItemSprayWorldItemRenderer
 
                     if (item.billboard)
                     {
-                        ItemSprayFormRenderer.applyBillboard(stack);
+                        ItemSprayGlobalSystem.applyBillboard(stack);
 
                         // 广告牌模式需要稳定面向镜头，因此只保留屏幕平面内的横滚旋转。
                         stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rz));
@@ -245,7 +245,7 @@ final class ItemSprayWorldItemRenderer
         return frustum.isVisible(new Box(x - half, y - half, z - half, x + half, y + half, z + half));
     }
 
-    private record RenderCandidate(ItemSprayFormRenderer.SprayedItem item, double x, double y, double z, float scale,
+    private record RenderCandidate(SprayedItem item, double x, double y, double z, float scale,
                                    double distanceSq, long order)
     {
     }

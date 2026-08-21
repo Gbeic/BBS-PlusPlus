@@ -50,7 +50,7 @@ final class ItemSprayIRLiteBridge
     private ItemSprayIRLiteBridge()
     {}
 
-    public static void collectShadowCasters(World world, Vec3d cameraPos, float tickDelta, Object sink, List<ItemSprayFormRenderer.SprayedItem> globalItems, List<ItemSprayFormRenderer.SprayedItem> deterministicWorldItems)
+    public static void collectShadowCasters(World world, Vec3d cameraPos, float tickDelta, Object sink, List<SprayedItem> globalItems, List<SprayedItem> deterministicWorldItems)
     {
         if (world == null || cameraPos == null || sink == null)
         {
@@ -65,7 +65,7 @@ final class ItemSprayIRLiteBridge
         }
 
         double maxDistanceSq = IRLITE_COLLECT_DIST * IRLITE_COLLECT_DIST;
-        double itemRenderDistanceSq = ItemSprayFormRenderer.getMaxRenderDistanceSquared();
+        double itemRenderDistanceSq = ItemSprayGlobalSystem.getMaxRenderDistanceSquared();
 
         if (itemRenderDistanceSq > 0D)
         {
@@ -125,9 +125,9 @@ final class ItemSprayIRLiteBridge
         return true;
     }
 
-    private static void collectShadowItems(List<IRLiteShadowItem> shadowItems, List<ItemSprayFormRenderer.SprayedItem> items, World world, Vec3d cameraPos, float tickDelta, double maxDistanceSq)
+    private static void collectShadowItems(List<IRLiteShadowItem> shadowItems, List<SprayedItem> items, World world, Vec3d cameraPos, float tickDelta, double maxDistanceSq)
     {
-        for (ItemSprayFormRenderer.SprayedItem item : items)
+        for (SprayedItem item : items)
         {
             if (!canCastShadow(item, world))
             {
@@ -161,7 +161,7 @@ final class ItemSprayIRLiteBridge
     private static List<IRLiteShadowItem> limitShadowItems(List<IRLiteShadowItem> shadowItems)
     {
         int hardLimit = getMaxItemShadowItems();
-        int renderLimit = ItemSprayFormRenderer.getMaxRenderedItems();
+        int renderLimit = ItemSprayGlobalSystem.getMaxRenderedItems();
 
         if (renderLimit > 0)
         {
@@ -256,7 +256,7 @@ final class ItemSprayIRLiteBridge
         return new IRLiteShadowCaster(items, cx, cy, cz, (float) Math.sqrt(radiusSq));
     }
 
-    private static boolean canCastShadow(ItemSprayFormRenderer.SprayedItem item, World world)
+    private static boolean canCastShadow(SprayedItem item, World world)
     {
         return item != null
             && item.scale > 0F
@@ -636,7 +636,7 @@ final class ItemSprayIRLiteBridge
         public final float radius;
         public final Matrix3f renderRotation;
 
-        private IRLiteShadowItem(ItemSprayFormRenderer.SprayedItem item, double x, double y, double z, float rx, float ry, float rz, float scale)
+        private IRLiteShadowItem(SprayedItem item, double x, double y, double z, float rx, float ry, float rz, float scale)
         {
             this.stack = item.stack.copy();
             this.x = x;
