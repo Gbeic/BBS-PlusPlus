@@ -1,0 +1,45 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+description="BBS++ 扩展功能插件 – 为 BBS 模组增添更多实用功能"
+authors="Gbeic"
+logoFile="icon.png"
+# 纯客户端模组，不参与服务端版本校验
+displayTest="IGNORE_ALL_VERSION"
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="${neo_version_range}"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="CLIENT"
+
+# BBS FSR 本体，必须先于 BBS++ 加载。
+# 不限定版本：FSR 仍处于 beta 迭代，jar 内声明的 mod_version 与实际发布号并不同步，
+# 写死范围只会在本体更新时误判为依赖不满足。兼容性由 Mixin 自身的注入结果保证。
+[[dependencies.${mod_id}]]
+modId="bbs"
+type="required"
+versionRange="[0,)"
+ordering="AFTER"
+side="CLIENT"
+
+[[mixins]]
+config="bbsplusplus.mixins.json"
+
+# IRLite 兼容注入，未安装 IRLite 时不加载
+[[mixins]]
+config="bbsplusplus-irlite.mixins.json"
+requiredMods=["irlite"]

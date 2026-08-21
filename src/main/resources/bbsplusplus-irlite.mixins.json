@@ -1,0 +1,11 @@
+{
+    "required": false,
+    "package": "gbeic.bbsplusplus.mixin.irlite",
+    "compatibilityLevel": "JAVA_21",
+    "client": [
+        "IRLiteBbsCasterSourceMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 0
+    }
+}

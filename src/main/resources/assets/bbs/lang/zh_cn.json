@@ -1,0 +1,10 @@
+{
+    "block.bbs.emissive_chroma_red": "发光红色色度方块",
+    "block.bbs.emissive_chroma_green": "发光绿色色度方块",
+    "block.bbs.emissive_chroma_blue": "发光蓝色色度方块",
+    "block.bbs.emissive_chroma_cyan": "发光青色色度方块",
+    "block.bbs.emissive_chroma_magenta": "发光品红色色度方块",
+    "block.bbs.emissive_chroma_yellow": "发光黄色色度方块",
+    "block.bbs.emissive_chroma_black": "发光黑色色度方块",
+    "block.bbs.emissive_chroma_white": "发光白色色度方块"
+}

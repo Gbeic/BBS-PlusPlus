@@ -1,0 +1,155 @@
+plugins {
+    id 'net.neoforged.gradle.userdev' version '7.1.21'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = archives_base_name
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version as int)
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'NeoForged'
+        url = 'https://maven.neoforged.net/releases'
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+}
+
+/**
+ * 定位 BBS FSR 的编译期依赖 jar。
+ *
+ * BBS FSR 目前只有 beta 版且没有发布到任何 Maven 仓库，因此只能走本地文件依赖：
+ * 1. 优先使用 gradle.properties 中 bbs_fsr_jar_dir 指定的目录；
+ * 2. 其次是项目下的 libs/（手动放置 jar 的位置）；
+ * 3. 最后回落到 references/bbs-FSR 自身的构建产物，方便本地改完 BBS 立刻联调。
+ *
+ * NeoForge 1.20.2+ 的生产环境与开发环境同为官方 Mojang 映射，不存在 Fabric 那样的
+ * intermediary 重映射步骤，所以直接引用编译好的 jar 即可正确解析 mchorse.bbs_mod.* 类。
+ */
+def locateBbsFsrJars = {
+    def candidates = []
+    def configured = findProperty('bbs_fsr_jar_dir')?.toString()?.trim()
+
+    if (configured) {
+        candidates << file(configured)
+    }
+
+    candidates << file('libs')
+    candidates << file('references/bbs-FSR/build/libs')
+
+    for (dir in candidates) {
+        if (!dir.isDirectory()) {
+            continue
+        }
+
+        // 排除 sources / javadoc 附属产物，只取主 jar
+        def jars = fileTree(dir) {
+            include '**/*.jar'
+            exclude '**/*-sources.jar'
+            exclude '**/*-javadoc.jar'
+        }.files.toList()
+
+        if (!jars.isEmpty()) {
+            return jars
+        }
+    }
+
+    return []
+}
+
+def bbsFsrJars = locateBbsFsrJars()
+
+if (bbsFsrJars.isEmpty()) {
+    logger.warn('[BBS++] 未找到 BBS FSR 依赖 jar，编译会因缺少 mchorse.bbs_mod.* 而失败。')
+    logger.warn('[BBS++] 请先在 references/bbs-FSR 执行 gradlew jar，或把 jar 放进 libs/ 目录。')
+} else {
+    logger.lifecycle("[BBS++] BBS FSR 依赖: ${bbsFsrJars*.name.join(', ')}")
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+
+    // BBS FSR 本体，仅编译期解析 Mixin 目标类；运行时由玩家自行安装 BBS。
+    compileOnly files(bbsFsrJars)
+
+    // AAA Particles（Effekseer 粒子引擎）。1.20.1 分支用的是 fabric-1.20.1-2.2.0，
+    // 这里平移到同版本号的 NeoForge 构建，保持 API 一致。属于软依赖，只在编译期解析。
+    compileOnly "maven.modrinth:aaa-particles:neoforge-1.21.1-2.2.0"
+
+    // Iris 与 IRLite 的注入全部走 @Mixin(targets = "...") 字符串和反射，
+    // 不需要编译期依赖，故不在此声明。
+}
+
+runs {
+    /*
+     * NeoGradle 默认给每个 run 配置各建一个 runs/<名字>/ 目录（client、server、data、
+     * gameTestServer）。本项目沿用 main 分支（Fabric 时期）的 run/ 目录，那里已有现成的
+     * mods、配置、光影包和存档；两个分支共用同一份运行环境，切分支时不必来回搬 mod。
+     *
+     * 这里统一把所有 run 的工作目录指向 run/，这样就不会再生成 runs/ 那一套空壳目录。
+     * 本模组是纯客户端 mod，server / data / gameTestServer 三个 run 实际不会用到，
+     * 共用同一目录不存在冲突。
+     */
+    configureEach {
+        /* junit 不是真正的运行环境，它只产出测试用的 classpath 参数文件（junit_*_args.txt）。
+         * 那属于构建产物，放进 build/ 才不会混进游戏运行目录。 */
+        workingDirectory project.file(name == 'junit' ? 'build/junit' : 'run')
+    }
+
+    client {
+        modSource sourceSets.main
+
+        // 控制台中文乱码修正：Java 18+ 的 file.encoding 已默认 UTF-8，但 Windows 上
+        // stdout/stderr 的编码仍跟随系统区域设置（简中为 GBK），日志里的中文会被按 GBK
+        // 写出，再被 UTF-8 终端解码就成了乱码。这里显式指定三者都用 UTF-8。
+        jvmArgument '-Dfile.encoding=UTF-8'
+        jvmArgument '-Dstdout.encoding=UTF-8'
+        jvmArgument '-Dstderr.encoding=UTF-8'
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = java_version as int
+    options.encoding = 'UTF-8'
+    // 迁移期间错误量远超 javac 默认的 100 条上限，放开以便一次看全
+    options.compilerArgs.addAll([
+        '-Xmaxerrs', '10000',
+        '-Xmaxwarns', '10000'
+    ])
+}
+
+processResources {
+    inputs.properties(
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_version: mod_version,
+        mod_license: mod_license,
+        minecraft_version_range: minecraft_version_range,
+        neo_version_range: neo_version_range,
+        loader_version_range: loader_version_range
+    )
+
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand(
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_version: mod_version,
+            mod_license: mod_license,
+            minecraft_version_range: minecraft_version_range,
+            neo_version_range: neo_version_range,
+            loader_version_range: loader_version_range
+        )
+    }
+}
