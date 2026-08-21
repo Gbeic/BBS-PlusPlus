@@ -14,6 +14,8 @@
     "bbs.config.bbspp.reverse_timeline_scroll-comment": "When enabled, reverses wheel-driven timeline direction in the film editor, including Ctrl+wheel cursor movement, Alt+wheel movement for selected keyframes or clips, and Alt+wheel horizontal timeline scrolling.",
     "bbs.config.bbspp.direct_parent_picking": "Direct Parent Picking (Shift+Click)",
     "bbs.config.bbspp.direct_parent_picking-comment": "When enabled, holding Shift and clicking a model part within the Replay Editor will directly select its parent bone without bringing up the hierarchy menu",
+    "bbs.config.bbspp.pose_bone_tree_view": "Pose Bone Tree List",
+    "bbs.config.bbspp.pose_bone_tree_view-comment": "When enabled, pose editor bones are indented by the model hierarchy and connected with tree guides. Search results remain flat",
     "bbs.config.bbspp.first_person_bobbing": "First Person View Bobbing",
     "bbs.config.bbspp.first_person_bobbing-comment": "When enabled, restores vanilla walking view bobbing effect when playing a 'First Person Replay'. This effect is a simulated implementation rather than directly reusing the game's native mechanism. Enabling this option will override and disable the original BBS bobbing implementation.",
     "bbs.config.bbspp.new_morphing_panel": "New Morphing Panel Layout",
@@ -224,5 +226,7 @@
     "bbspp.undo_history.property.hp": "Health",
     "bbspp.undo_history.property.hunger": "Hunger",
     "bbspp.undo_history.property.xp_level": "XP level",
-    "bbspp.undo_history.property.xp_progress": "XP progress"
+    "bbspp.undo_history.property.xp_progress": "XP progress",
+    "bbspp.ui.pose.parameter_brush_tooltip": "Bone Parameter Brush\n\nSave all parameters from the primary selected bone, then click another bone in the list or model viewport to paste them. The brush exits after one use; press Esc to cancel. An orange diamond indicates that the bone has changes in the current pose keyframe",
+    "bbspp.ui.pose.parameter_brush_cancel": "Cancel bone parameter brush"
 }

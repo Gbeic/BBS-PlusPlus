@@ -38,6 +38,7 @@ public class BBSSettingsMixin
         BBSAddonsSettings.preventNegativeKeyframes = builder.getBoolean("prevent_negative_keyframes", false);
         BBSAddonsSettings.reverseTimelineScroll = builder.getBoolean("reverse_timeline_scroll", false);
         BBSAddonsSettings.directParentPicking = builder.getBoolean("direct_parent_picking", false);
+        BBSAddonsSettings.poseBoneTreeView = builder.getBoolean("pose_bone_tree_view", false);
         BBSAddonsSettings.firstPersonBobbing = builder.getBoolean("first_person_bobbing", false);
         BBSAddonsSettings.newMorphingPanel = builder.getBoolean("new_morphing_panel", false);
         BBSAddonsSettings.newFilmLibraryUi = builder.getBoolean("new_film_library_ui", false);

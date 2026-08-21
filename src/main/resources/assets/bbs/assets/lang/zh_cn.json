@@ -14,6 +14,8 @@
     "bbs.config.bbspp.reverse_timeline_scroll-comment": "开启后，反转影片编辑器中滚轮驱动的时间线方向，包括Ctrl+滚轮移动播放头、Alt+滚轮移动选中关键帧或剪辑，以及Alt滚轮左右滚动时间线",
     "bbs.config.bbspp.direct_parent_picking": "Shift直接选择父级",
     "bbs.config.bbspp.direct_parent_picking-comment": "开启后，按住Shift在(回放编辑器)点击模型部位时，将不再弹出层级选择菜单，而是直接选中其父骨骼",
+    "bbs.config.bbspp.pose_bone_tree_view": "姿势骨骼树形列表",
+    "bbs.config.bbspp.pose_bone_tree_view-comment": "开启后，姿势编辑器的骨骼列表会按模型父子层级缩进并绘制树形连接线；搜索时仍平铺显示匹配项",
     "bbs.config.bbspp.first_person_bobbing": "开启第一人称视角晃动",
     "bbs.config.bbspp.first_person_bobbing-comment": "开启后，在播放“第一人称回放”时，会还原原版的行走视角晃动效果。该效果为模拟实现，开启后将会完全屏蔽覆盖BBS原版自带的晃动效果，改用插件算法。",
     "bbs.config.bbspp.new_morphing_panel": "全新伪装界面布局",
@@ -225,6 +227,8 @@
     "bbspp.undo_history.property.hunger": "饥饿值",
     "bbspp.undo_history.property.xp_level": "经验等级",
     "bbspp.undo_history.property.xp_progress": "经验进度",
+    "bbspp.ui.pose.parameter_brush_tooltip": "骨骼参数刷\n\n保存当前主选骨骼的完整参数，再点击列表或模型视图中的另一根骨骼即可粘贴；单次使用后自动退出，Esc取消。橙色菱形表示该骨骼在当前姿势帧有改动",
+    "bbspp.ui.pose.parameter_brush_cancel": "取消骨骼参数刷",
     
     "bbspp.keyframe_format_tip": "【自定义轨道名称模板】将上方 bbspp.keyframe. 开头的键复制到此处并修改值即可覆盖默认翻译。例如：",
     "bbspp.keyframe.x": "X",

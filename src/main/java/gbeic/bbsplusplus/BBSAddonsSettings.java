@@ -32,6 +32,11 @@ public class BBSAddonsSettings
     /** 开启后，按住 Shift 在3D视图中点击模型部位，不再弹出骨骼层级菜单，而是直接选中其父级骨骼 */
     public static ValueBoolean directParentPicking;
 
+    /**
+     * 开启后，姿势编辑器骨骼列表按模型父子层级显示为树形结构。
+     */
+    public static ValueBoolean poseBoneTreeView;
+
     /** 开启后，第一人称回放时恢复原版视角晃动 */
     public static ValueBoolean firstPersonBobbing;
 
