@@ -213,6 +213,7 @@
     "bbspp.ui.forms.editors.video_billboard.height": "高度",
     "bbspp.ui.forms.editors.video_billboard.keep_aspect_ratio": "保持原始宽高比",
     "bbspp.ui.forms.editors.video_billboard.billboard": "始终面向镜头",
+    "bbspp.ui.forms.editors.video_billboard.shaded": "受环境光照影响",
     "bbspp.undo_history.action.add": "添加",
     "bbspp.undo_history.action.remove": "删除",
     "bbspp.undo_history.action.change": "修改",

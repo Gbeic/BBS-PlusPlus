@@ -49,6 +49,7 @@ public class UIVideoBillboardForm extends UIForm<VideoBillboardForm>
         public UITrackpad height;
         public UIToggle keepAspectRatio;
         public UIToggle billboard;
+        public UIToggle shaded;
 
         public Panel(UIForm<VideoBillboardForm> editor)
         {
@@ -73,6 +74,7 @@ public class UIVideoBillboardForm extends UIForm<VideoBillboardForm>
             this.height = new UITrackpad((v) -> this.form.height.set(v.floatValue())).limit(0.001D);
             this.keepAspectRatio = new UIToggle(label("bbspp.ui.forms.editors.video_billboard.keep_aspect_ratio"), false, (b) -> this.form.keepAspectRatio.set(b.getValue()));
             this.billboard = new UIToggle(label("bbspp.ui.forms.editors.video_billboard.billboard"), false, (b) -> this.form.billboard.set(b.getValue()));
+            this.shaded = new UIToggle(label("bbspp.ui.forms.editors.video_billboard.shaded"), false, (b) -> this.form.shaded.set(b.getValue()));
 
             this.options.add(this.backendStatus);
             this.options.add(section("bbspp.ui.forms.editors.video_billboard.section.file"));
@@ -86,7 +88,7 @@ public class UIVideoBillboardForm extends UIForm<VideoBillboardForm>
             this.options.add(section("bbspp.ui.forms.editors.video_billboard.section.display"));
             this.options.add(UI.label(label("bbspp.ui.forms.editors.video_billboard.width")), this.width);
             this.options.add(UI.label(label("bbspp.ui.forms.editors.video_billboard.height")), this.height);
-            this.options.add(this.keepAspectRatio, this.billboard);
+            this.options.add(this.keepAspectRatio, this.billboard, this.shaded);
         }
 
         @Override
@@ -106,6 +108,7 @@ public class UIVideoBillboardForm extends UIForm<VideoBillboardForm>
             this.height.setValue(form.height.get());
             this.keepAspectRatio.setValue(form.keepAspectRatio.get());
             this.billboard.setValue(form.billboard.get());
+            this.shaded.setValue(form.shaded.get());
         }
 
         private void openPicker()

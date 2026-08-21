@@ -2,6 +2,8 @@ package gbeic.bbsplusplus.client.renderer;
 
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 /**
@@ -51,7 +53,7 @@ public final class VideoBackendBridge
         {
             return new DecoderHandle(openAssetVideoMethod.invoke(null, relativePath));
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             throw new RuntimeException("打开视频后端失败: " + e.getMessage(), e);
         }
@@ -94,30 +96,30 @@ public final class VideoBackendBridge
     public static final class DecoderHandle implements AutoCloseable
     {
         private final Object decoder;
-        private final Method renderTime;
-        private final Method getTextureId;
-        private final Method getMetadata;
-        private final Method close;
+        /** 每帧调用的渲染句柄，使用 MethodHandle 避免逐帧反射开销。 */
+        private final MethodHandle renderTime;
+        private final MethodHandle getTextureId;
+        private final MethodHandle close;
         private final Object metadata;
-        private final Method width;
-        private final Method height;
-        private final Method durationSeconds;
+        private final MethodHandle width;
+        private final MethodHandle height;
+        private final MethodHandle durationSeconds;
 
-        private DecoderHandle(Object decoder) throws Exception
+        private DecoderHandle(Object decoder) throws Throwable
         {
             this.decoder = decoder;
             Class<?> decoderClass = decoder.getClass();
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-            this.renderTime = decoderClass.getMethod("renderTime", double.class);
-            this.getTextureId = decoderClass.getMethod("getTextureId");
-            this.getMetadata = decoderClass.getMethod("getMetadata");
-            this.close = decoderClass.getMethod("close");
-            this.metadata = this.getMetadata.invoke(decoder);
+            this.renderTime = lookup.unreflect(decoderClass.getMethod("renderTime", double.class));
+            this.getTextureId = lookup.unreflect(decoderClass.getMethod("getTextureId"));
+            this.close = lookup.unreflect(decoderClass.getMethod("close"));
+            this.metadata = lookup.unreflect(decoderClass.getMethod("getMetadata")).invoke(decoder);
 
             Class<?> metadataClass = this.metadata.getClass();
-            this.width = metadataClass.getMethod("width");
-            this.height = metadataClass.getMethod("height");
-            this.durationSeconds = metadataClass.getMethod("durationSeconds");
+            this.width = lookup.unreflect(metadataClass.getMethod("width"));
+            this.height = lookup.unreflect(metadataClass.getMethod("height"));
+            this.durationSeconds = lookup.unreflect(metadataClass.getMethod("durationSeconds"));
         }
 
         public void renderTime(double seconds)
@@ -126,7 +128,7 @@ public final class VideoBackendBridge
             {
                 this.renderTime.invoke(this.decoder, seconds);
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 throw new RuntimeException("视频寻帧失败: " + e.getMessage(), e);
             }
@@ -136,9 +138,9 @@ public final class VideoBackendBridge
         {
             try
             {
-                return ((Number) this.getTextureId.invoke(this.decoder)).intValue();
+                return (int) this.getTextureId.invoke(this.decoder);
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 return 0;
             }
@@ -158,21 +160,21 @@ public final class VideoBackendBridge
         {
             try
             {
-                return ((Number) this.durationSeconds.invoke(this.metadata)).doubleValue();
+                return (double) this.durationSeconds.invoke(this.metadata);
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 return 0D;
             }
         }
 
-        private int getInt(Method method)
+        private int getInt(MethodHandle method)
         {
             try
             {
-                return ((Number) method.invoke(this.metadata)).intValue();
+                return (int) method.invoke(this.metadata);
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 return 0;
             }
@@ -185,7 +187,7 @@ public final class VideoBackendBridge
             {
                 this.close.invoke(this.decoder);
             }
-            catch (Exception ignored)
+            catch (Throwable ignored)
             {
             }
         }

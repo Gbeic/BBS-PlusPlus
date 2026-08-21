@@ -213,6 +213,7 @@
     "bbspp.ui.forms.editors.video_billboard.height": "Height",
     "bbspp.ui.forms.editors.video_billboard.keep_aspect_ratio": "Keep Original Aspect Ratio",
     "bbspp.ui.forms.editors.video_billboard.billboard": "Always Face Camera",
+    "bbspp.ui.forms.editors.video_billboard.shaded": "Affected by Environment Light",
     "bbspp.undo_history.action.add": "Add",
     "bbspp.undo_history.action.remove": "Remove",
     "bbspp.undo_history.action.change": "Change",

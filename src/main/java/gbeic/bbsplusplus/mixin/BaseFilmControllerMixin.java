@@ -43,8 +43,9 @@ public abstract class BaseFilmControllerMixin {
 
     /**
      * 注入目标：{@code BaseFilmController#renderEntity(WorldRenderContext, Replay, IEntity)} 开始处。
-     * 注入原因：实体 age 在编辑器向后跳转时仍只会递增，不能代表影片播放头时间。
-     * 修改行为：在形态渲染期间暴露当前回放的真实局部 tick，让视频能够按播放头正向或反向寻帧。
+     * 注入原因：实体 age 在编辑器向后跳转时仍只会递增，不能代表影片播放头时间；且整数 tick 每游戏 tick
+     * 才跳变一次，高帧率视频会呈 20Hz 阶梯跳动导致卡顿。
+     * 修改行为：在形态渲染期间暴露当前回放的真实局部 tick（含帧间浮点插值），让视频按播放头平滑正向或反向寻帧。
      */
     @Inject(
         method = "renderEntity(Lnet/fabricmc/fabric/api/client/rendering/v1/WorldRenderContext;Lmchorse/bbs_mod/film/replays/Replay;Lmchorse/bbs_mod/forms/entities/IEntity;)V",
@@ -53,7 +54,9 @@ public abstract class BaseFilmControllerMixin {
     )
     private void bbspp$beginVideoTimelineRender(WorldRenderContext context, Replay replay, IEntity entity, CallbackInfo ci)
     {
-        int tick = replay == null ? this.getTick() : replay.getTick(this.getTick());
+        int baseTick = replay == null ? this.getTick() : replay.getTick(this.getTick());
+        // 叠加帧间 partial tick，使视频目标秒数随渲染帧平滑推进，避免时间轴播放时的 20Hz 阶梯跳变。
+        float tick = baseTick + this.getTransition(entity, context.tickDelta());
 
         VideoTimelineState.beginFilmRender(tick);
     }

@@ -35,6 +35,7 @@ public class VideoBillboardForm extends Form
     public final ValueInt outOfRange = new ValueInt("outOfRange", OUT_OF_RANGE_HOLD, OUT_OF_RANGE_HOLD, OUT_OF_RANGE_HIDE);
     public final ValueBoolean keepAspectRatio = new ValueBoolean("keepAspectRatio", true);
     public final ValueBoolean billboard = new ValueBoolean("billboard", false);
+    public final ValueBoolean shaded = new ValueBoolean("shaded", false);
 
     public VideoBillboardForm()
     {
@@ -53,6 +54,10 @@ public class VideoBillboardForm extends Form
         this.add(this.outOfRange);
         this.add(this.keepAspectRatio);
         this.add(this.billboard);
+
+        // shaded 只是画面显示开关，不属于动画属性，隐藏其关键帧轨道。
+        this.shaded.invisible();
+        this.add(this.shaded);
     }
 
     @Override
