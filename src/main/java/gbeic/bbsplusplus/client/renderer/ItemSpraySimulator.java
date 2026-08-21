@@ -1,5 +1,6 @@
 package gbeic.bbsplusplus.client.renderer;
 
+import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
 import gbeic.bbsplusplus.forms.ItemSprayForm;
 import gbeic.bbsplusplus.mixin.GameRendererAccessor;
 import mchorse.bbs_mod.blocks.entities.ModelBlockEntity;
@@ -57,6 +58,19 @@ class ItemSpraySimulator
     {
         this.deterministicItems.clear();
 
+        try
+        {
+            this.sampleDeterministicItemsInner(context);
+        }
+        finally
+        {
+            // 调试开启时记录预览采样数（提前触顶退出时也能拿到真实数量）
+            ItemSprayDebug.recordPreview(this.deterministicItems.size());
+        }
+    }
+
+    private void sampleDeterministicItemsInner(FormRenderingContext context)
+    {
         float time = this.getDeterministicSimulationTime(context);
 
         int frequency = Math.max(1, this.form.frequency.get());

@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.client.renderer;
 
 import gbeic.bbsplusplus.BBSAddonsSettings;
+import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
@@ -52,6 +53,9 @@ final class ItemSprayIRLiteBridge
 
     public static void collectShadowCasters(World world, Vec3d cameraPos, float tickDelta, Object sink, List<SprayedItem> globalItems, List<SprayedItem> deterministicWorldItems)
     {
+        // 调试开启时先清零本帧投影数，后续任何提前返回都保持 0，只有真正投影时才覆盖为实际数量
+        ItemSprayDebug.recordIRLiteShadowItems(0);
+
         if (world == null || cameraPos == null || sink == null)
         {
             return;
@@ -90,6 +94,7 @@ final class ItemSprayIRLiteBridge
         }
 
         shadowItems = limitShadowItems(shadowItems);
+        ItemSprayDebug.recordIRLiteShadowItems(shadowItems.size());
         List<IRLiteShadowCaster> casters = createShadowCasterBatches(shadowItems);
 
         for (IRLiteShadowCaster caster : casters)

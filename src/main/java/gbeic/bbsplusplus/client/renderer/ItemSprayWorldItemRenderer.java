@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
 import mchorse.bbs_mod.client.BBSRendering;
 import mchorse.bbs_mod.forms.CustomVertexConsumerProvider;
 import mchorse.bbs_mod.forms.FormUtilsClient;
@@ -44,6 +45,7 @@ final class ItemSprayWorldItemRenderer
         List<RenderCandidate> candidates = new ArrayList<>(items.size());
 
         collectRenderCandidates(candidates, items, tickDelta, cameraPos, null, -1D, 0L);
+        ItemSprayDebug.recordCandidates(candidates.size(), candidates.size());
         renderCollectedItems(stack, candidates, tickDelta, world, fallbackLight, overlay, cameraPos);
     }
 
@@ -66,6 +68,8 @@ final class ItemSprayWorldItemRenderer
             return;
         }
 
+        int rawCount = candidates.size();
+
         if (maxRenderedItems > 0 && candidates.size() > maxRenderedItems)
         {
             // 超出渲染预算时，先保留离镜头最近的粒子，再恢复原始顺序绘制，避免随机闪烁和排序抖动。
@@ -74,6 +78,7 @@ final class ItemSprayWorldItemRenderer
             candidates.sort((a, b) -> Long.compare(a.order, b.order));
         }
 
+        ItemSprayDebug.recordCandidates(rawCount, candidates.size());
         renderCollectedItems(stack, candidates, tickDelta, world, fallbackLight, overlay, cameraPos);
     }
 
@@ -98,8 +103,17 @@ final class ItemSprayWorldItemRenderer
             double z = MathHelper.lerp(tickDelta, (float) item.prevPos.z, (float) item.pos.z);
             double distanceSq = getDistanceSquared(x, y, z, cameraPos);
 
-            if (!isWithinRenderDistance(distanceSq, maxDistanceSq) || !isVisibleInFrustum(x, y, z, scale, frustum))
+            if (!isWithinRenderDistance(distanceSq, maxDistanceSq))
             {
+                ItemSprayDebug.recordCulledByDistance();
+                order++;
+
+                continue;
+            }
+
+            if (!isVisibleInFrustum(x, y, z, scale, frustum))
+            {
+                ItemSprayDebug.recordCulledByFrustum();
                 order++;
 
                 continue;

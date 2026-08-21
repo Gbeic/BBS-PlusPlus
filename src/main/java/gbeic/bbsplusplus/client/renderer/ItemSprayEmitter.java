@@ -1,5 +1,6 @@
 package gbeic.bbsplusplus.client.renderer;
 
+import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
 import gbeic.bbsplusplus.forms.ItemSprayForm;
 import mchorse.bbs_mod.utils.colors.Color;
 import net.minecraft.item.ItemStack;
@@ -156,6 +157,9 @@ class ItemSprayEmitter
             ItemSprayPhysics.configureCenterStop(item, centerStopTarget);
             target.add(item);
         }
+
+        // 调试开启时记录本次发射批次的粒子数
+        ItemSprayDebug.recordEmitted(amount);
     }
 
     /**

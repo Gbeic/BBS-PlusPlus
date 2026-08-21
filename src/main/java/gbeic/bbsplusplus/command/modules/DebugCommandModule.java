@@ -3,6 +3,7 @@ package gbeic.bbsplusplus.command.modules;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import gbeic.bbsplusplus.client.compat.shadercurves.ShaderCurveDebug;
+import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -22,7 +23,8 @@ import java.util.function.Consumer;
 public class DebugCommandModule implements BBSPlusPlusCommandModule
 {
     private static final List<DebugModule> MODULES = List.of(
-        new DebugModule("shader_curves", "光影曲线", ShaderCurveDebug::isShaderCurvePatches, ShaderCurveDebug::setShaderCurvePatches)
+        new DebugModule("shader_curves", "光影曲线", ShaderCurveDebug::isShaderCurvePatches, ShaderCurveDebug::setShaderCurvePatches),
+        new DebugModule("item_spray", "物品喷射", ItemSprayDebug::isEnabled, ItemSprayDebug::setEnabled)
     );
 
     @Override

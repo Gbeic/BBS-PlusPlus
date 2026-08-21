@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.client.renderer;
 
 import gbeic.bbsplusplus.BBSAddonsSettings;
+import gbeic.bbsplusplus.client.debug.ItemSprayDebug;
 import mchorse.bbs_mod.client.BBSRendering;
 import mchorse.bbs_mod.events.ModelBlockEntityUpdateCallback;
 import mchorse.bbs_mod.forms.entities.IEntity;
@@ -73,9 +74,18 @@ final class ItemSprayGlobalSystem
 
             if (client.isPaused()) return;
 
+            ItemSprayDebug.recordGlobalItems(GLOBAL_ITEMS.size(), DETERMINISTIC_WORLD_ITEMS.size());
+
+            // 调试开启时记录物理更新耗时，未开启时只有一次布尔判断的开销
+            long physicsStartNanos = ItemSprayDebug.isEnabled() ? System.nanoTime() : 0L;
             ItemSprayPhysics.updateItems(GLOBAL_ITEMS, client.world);
             DETERMINISTIC_WORLD_ITEMS.removeIf((item) -> item.source != null && !item.source.isAlive(client.world));
             DETERMINISTIC_SOURCE_CLEAR_FRAMES.keySet().removeIf((source) -> !source.isAlive(client.world));
+
+            if (ItemSprayDebug.isEnabled())
+            {
+                ItemSprayDebug.recordPhysicsNanos(System.nanoTime() - physicsStartNanos);
+            }
         });
 
         WorldRenderEvents.START.register(ctx -> currentWorldRenderFrame++);
@@ -86,12 +96,24 @@ final class ItemSprayGlobalSystem
             if (isShadowLikePass()) return;
             if (GLOBAL_ITEMS.isEmpty() && DETERMINISTIC_WORLD_ITEMS.isEmpty()) return;
 
+            // 每帧开始时清零剔除计数，HUD 只显示本帧数据
+            ItemSprayDebug.resetFrameCounters();
+
             MatrixStack stack = ctx.matrixStack();
             Vec3d camPos = ctx.camera().getPos();
             Frustum frustum = isFrustumCullingEnabled() ? ctx.frustum() : null;
             double maxDistanceSq = getMaxRenderDistanceSquared();
+            int maxRendered = getMaxRenderedItems();
 
-            ItemSprayWorldItemRenderer.renderWorldItems(stack, ctx.tickDelta(), ctx.world(), 0, OverlayTexture.DEFAULT_UV, camPos, frustum, getMaxRenderedItems(), maxDistanceSq, GLOBAL_ITEMS, DETERMINISTIC_WORLD_ITEMS);
+            // 调试开启时记录世界渲染耗时，未开启时只有一次布尔判断的开销
+            long renderStartNanos = ItemSprayDebug.isEnabled() ? System.nanoTime() : 0L;
+            ItemSprayWorldItemRenderer.renderWorldItems(stack, ctx.tickDelta(), ctx.world(), 0, OverlayTexture.DEFAULT_UV, camPos, frustum, maxRendered, maxDistanceSq, GLOBAL_ITEMS, DETERMINISTIC_WORLD_ITEMS);
+            ItemSprayDebug.recordRenderBudget(maxRendered, maxDistanceSq);
+
+            if (ItemSprayDebug.isEnabled())
+            {
+                ItemSprayDebug.recordRenderNanos(System.nanoTime() - renderStartNanos);
+            }
         });
     }
 
