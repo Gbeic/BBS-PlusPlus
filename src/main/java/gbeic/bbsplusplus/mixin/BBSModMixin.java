@@ -66,5 +66,23 @@ public class BBSModMixin
         {
             LOGGER.error("注册 StructureForm 失败", e);
         }
+
+        /* 视频伪装表单依赖 mediaplayer 前置模组，检测到才注册到 FormArchitect */
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("mediaplayer"))
+        {
+            try
+            {
+                BBSMod.getForms().register(Link.bbs("video_billboard"), gbeic.bbsplusplus.forms.VideoBillboardForm.class);
+                LOGGER.info("已注册 VideoBillboardForm 到 FormArchitect");
+            }
+            catch (Exception e)
+            {
+                LOGGER.error("注册 VideoBillboardForm 失败", e);
+            }
+        }
+        else
+        {
+            LOGGER.info("未检测到 mediaplayer 模组，跳过注册 VideoBillboardForm");
+        }
     }
 }

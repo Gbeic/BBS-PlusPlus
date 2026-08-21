@@ -84,6 +84,35 @@ public class BBSPlusPlusModClient implements ClientModInitializer
         this.registerStructureStick();
         this.registerVFXDestructionWand();
 
+        // 视频伪装（VideoBillboard）依赖 mediaplayer 前置模组，检测到才注册
+        if (FabricLoader.getInstance().isModLoaded("mediaplayer"))
+        {
+            ClientLifecycleEvents.CLIENT_STARTED.register(client ->
+            {
+                try
+                {
+                    FormUtilsClient.register(gbeic.bbsplusplus.forms.VideoBillboardForm.class, gbeic.bbsplusplus.client.renderer.VideoBillboardFormRenderer::new);
+                    UIFormEditor.register(gbeic.bbsplusplus.forms.VideoBillboardForm.class, gbeic.bbsplusplus.client.ui.forms.editors.forms.UIVideoBillboardForm::new);
+
+                    java.io.File videoDir = new java.io.File(BBSMod.getAssetsFolder(), "video");
+                    if (!videoDir.exists() && videoDir.mkdirs())
+                    {
+                        BBSPlusPlusMod.LOGGER.info("已创建视频资产文件夹: {}", videoDir.getAbsolutePath());
+                    }
+
+                    addFormToExtraCategory(new gbeic.bbsplusplus.forms.VideoBillboardForm(), "VideoBillboardForm");
+                }
+                catch (Exception e)
+                {
+                    BBSPlusPlusMod.LOGGER.warn("注册视频广告牌形态失败: {}", e.getMessage());
+                }
+            });
+        }
+        else
+        {
+            BBSPlusPlusMod.LOGGER.info("未检测到 mediaplayer 前置模组，跳过视频广告牌功能注册。");
+        }
+
         // 注册资源包，用于提供粒子预览图等资源
         ClientLifecycleEvents.CLIENT_STARTED.register(client ->
         {

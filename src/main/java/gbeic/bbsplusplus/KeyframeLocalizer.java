@@ -20,6 +20,7 @@ public class KeyframeLocalizer
     private static final Map<String, String> CN = new HashMap<>();
     private static final Map<String, String> ITEM_SPRAY_CN = new HashMap<>();
     private static final Map<String, String> AAA_PARTICLE_CN = new HashMap<>();
+    private static final Map<String, String> VIDEO_BILLBOARD_CN = new HashMap<>();
 
     static
     {
@@ -469,6 +470,21 @@ public class KeyframeLocalizer
         aaaParticle("trigger2", "触发器 2");
         aaaParticle("trigger3", "触发器 3");
         aaaParticle("ignoreDepth", "穿透渲染");
+
+        /* 视频广告牌形态专属，避免 width/height/speed/loop 等通用属性影响其它形态。 */
+        videoBillboard("video", "视频文件");
+        videoBillboard("width", "宽度");
+        videoBillboard("height", "高度");
+        videoBillboard("offsetSeconds", "起始偏移");
+        videoBillboard("speed", "速度");
+        videoBillboard("paused", "暂停");
+        videoBillboard("restart", "重启");
+        videoBillboard("loop", "循环");
+        videoBillboard("loopStart", "循环起点");
+        videoBillboard("loopEnd", "循环终点");
+        videoBillboard("outOfRange", "超出处理");
+        videoBillboard("keepAspectRatio", "保持原始比例");
+        videoBillboard("billboard", "始终面向镜头");
     }
 
     private static void cn(String key, String chinese)
@@ -484,6 +500,11 @@ public class KeyframeLocalizer
     private static void aaaParticle(String key, String chinese)
     {
         AAA_PARTICLE_CN.put(key, chinese);
+    }
+
+    private static void videoBillboard(String key, String chinese)
+    {
+        VIDEO_BILLBOARD_CN.put(key, chinese);
     }
 
     /**
@@ -566,6 +587,12 @@ public class KeyframeLocalizer
     public static String localizeAAAParticle(String key)
     {
         return localizeWithMap(key, "bbspp.keyframe.aaa_particle.", AAA_PARTICLE_CN);
+    }
+
+    /** 返回视频广告牌形态专属轨道名称，避免通用属性名影响其它形态。 */
+    public static String localizeVideoBillboard(String key)
+    {
+        return localizeWithMap(key, "bbspp.keyframe.video_billboard.", VIDEO_BILLBOARD_CN);
     }
 
     private static String localizeWithMap(String key, String l10nPrefix, Map<String, String> fallback)

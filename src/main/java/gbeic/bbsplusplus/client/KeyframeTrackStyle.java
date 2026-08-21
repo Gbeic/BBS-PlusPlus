@@ -11,6 +11,7 @@ import mchorse.bbs_mod.utils.colors.Colors;
 import gbeic.bbsplusplus.KeyframeLocalizer;
 import gbeic.bbsplusplus.forms.AAAParticleForm;
 import gbeic.bbsplusplus.forms.ItemSprayForm;
+import gbeic.bbsplusplus.forms.VideoBillboardForm;
 import gbeic.bbsplusplus.api.KeyframeTrackExtensionRegistry;
 import mchorse.bbs_mod.ui.film.replays.UIReplaysEditor;
 
@@ -64,6 +65,15 @@ public class KeyframeTrackStyle
         else if (form instanceof AAAParticleForm)
         {
             String title = KeyframeLocalizer.localizeAAAParticle(sheet.id);
+
+            if (title != null)
+            {
+                sheet.title = IKey.constant(title);
+            }
+        }
+        else if (form instanceof VideoBillboardForm)
+        {
+            String title = KeyframeLocalizer.localizeVideoBillboard(sheet.id);
 
             if (title != null)
             {
@@ -126,6 +136,11 @@ public class KeyframeTrackStyle
             return getAAAParticleColor(key);
         }
 
+        if (form instanceof VideoBillboardForm)
+        {
+            return getVideoBillboardColor(key);
+        }
+
         return null;
     }
 
@@ -139,6 +154,11 @@ public class KeyframeTrackStyle
         if (form instanceof AAAParticleForm)
         {
             return getAAAParticleIcon(key);
+        }
+
+        if (form instanceof VideoBillboardForm)
+        {
+            return getVideoBillboardIcon(key);
         }
 
         return null;
@@ -306,6 +326,63 @@ public class KeyframeTrackStyle
                 return Icons.BULLET;
             case "ignoreDepth":
                 return Icons.VISIBLE;
+        }
+
+        return null;
+    }
+
+    private static Integer getVideoBillboardColor(String key)
+    {
+        switch (key)
+        {
+            case "video":
+                return Colors.MAGENTA;
+            case "width":
+            case "height":
+            case "keepAspectRatio":
+            case "billboard":
+                return Colors.CYAN;
+            case "offsetSeconds":
+            case "speed":
+            case "paused":
+            case "restart":
+            case "loop":
+            case "loopStart":
+            case "loopEnd":
+            case "outOfRange":
+                return Colors.YELLOW;
+        }
+
+        return null;
+    }
+
+    private static Icon getVideoBillboardIcon(String key)
+    {
+        switch (key)
+        {
+            case "video":
+                return Icons.FILM;
+            case "width":
+            case "height":
+                return Icons.SCALE;
+            case "keepAspectRatio":
+                return Icons.LINK;
+            case "billboard":
+                return Icons.LOOKING;
+            case "offsetSeconds":
+            case "loopStart":
+            case "loopEnd":
+                return Icons.TIME;
+            case "speed":
+                return Icons.STOPWATCH;
+            case "paused":
+                return Icons.PAUSE;
+            case "restart":
+                return Icons.REDO;
+            case "loop":
+                return Icons.REFRESH;
+            case "outOfRange":
+                return Icons.WRENCH;
         }
 
         return null;

@@ -1,7 +1,6 @@
 package gbeic.bbsplusplus.mixin.shadercurves;
 
 import gbeic.bbsplusplus.client.compat.shadercurves.ShaderCurveDebug;
-import gbeic.bbsplusplus.compat.irlite.IrliteShaderCurveBridge;
 import mchorse.bbs_mod.client.BBSRendering;
 import mchorse.bbs_mod.utils.iris.ShaderCurves;
 import org.spongepowered.asm.mixin.Mixin;
@@ -146,15 +145,12 @@ public class ShaderCurvesMixin
      * 注入目标：{@code ShaderCurves#reset()} 末尾。
      * 注入原因：切换或重载光影包时，需要重新记录新光影包的源码与全局变量表。
      * 修改行为：只清理排查日志的去重状态，不修改光影曲线处理结果。
-     * reset 清空变量表后立即重注入 IRLite 参数，让它们始终对光影曲线可用。
      */
     @Inject(method = "reset", at = @At("TAIL"), remap = false)
     private static void bbspp$resetDebugState(CallbackInfo ci)
     {
         BBSPP$LOGGED_SOURCE_HASHES.clear();
         BBSPP$LAST_LOGGED_VARIABLE_MAP.clear();
-
-        IrliteShaderCurveBridge.register();
     }
 
     /**
