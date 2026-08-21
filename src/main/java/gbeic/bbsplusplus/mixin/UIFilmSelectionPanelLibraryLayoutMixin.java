@@ -657,7 +657,8 @@ public abstract class UIFilmSelectionPanelLibraryLayoutMixin implements IFilmLib
 
         if (!folder.strings.isEmpty() && !pathList.bbspp$getFilmLibraryFolders().contains(folder))
         {
-            FilmLibraryDefaultLocation.setAllFilms();
+            // 默认文件夹暂时找不到（例如资源尚未加载完）时仅本次回退到全部影片，
+            // 不覆盖持久化的默认打开设置，避免用户设置被悄悄抹掉。
             pathList.bbspp$showAllFilmLibraryFilms();
 
             return;

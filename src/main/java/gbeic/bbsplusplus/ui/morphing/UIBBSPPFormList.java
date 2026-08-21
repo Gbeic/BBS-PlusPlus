@@ -149,14 +149,10 @@ public class UIBBSPPFormList extends UIFormList
 
         this.sidebar.select(currentSelectionId);
         
-        // 如果之前选中的类别被删除了，回退到首页
+        // 如果之前选中的类别暂时匹配不上，仅本次回退到首页，
+        // 不覆盖持久化的默认分类设置，避免用户设置被悄悄抹掉。
         if (this.sidebar.selected == null)
         {
-            if (!MorphingDefaultCategory.HOME.equals(currentSelectionId))
-            {
-                MorphingDefaultCategory.set(MorphingDefaultCategory.HOME);
-            }
-
             this.sidebar.select(MorphingDefaultCategory.HOME);
         }
         
@@ -183,9 +179,9 @@ public class UIBBSPPFormList extends UIFormList
 
         this.sidebar.select(id);
 
+        // 分类暂时匹配不上时仅本次回退到首页，不覆盖持久化的默认分类设置。
         if (this.sidebar.selected == null)
         {
-            MorphingDefaultCategory.set(MorphingDefaultCategory.HOME);
             this.sidebar.select(MorphingDefaultCategory.HOME);
         }
     }

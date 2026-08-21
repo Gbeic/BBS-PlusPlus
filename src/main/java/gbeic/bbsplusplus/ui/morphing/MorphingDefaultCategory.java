@@ -1,6 +1,7 @@
 package gbeic.bbsplusplus.ui.morphing;
 
 import gbeic.bbsplusplus.BBSAddonsSettings;
+import mchorse.bbs_mod.settings.Settings;
 
 /**
  * 管理新版伪装界面的默认打开分类。
@@ -40,7 +41,23 @@ public final class MorphingDefaultCategory
     {
         if (BBSAddonsSettings.morphingDefaultCategory != null)
         {
-            BBSAddonsSettings.morphingDefaultCategory.set(id == null || id.isEmpty() ? HOME : id);
+            String value = id == null || id.isEmpty() ? HOME : id;
+
+            if (value.equals(get()))
+            {
+                return;
+            }
+
+            BBSAddonsSettings.morphingDefaultCategory.set(value);
+            saveNow();
+        }
+    }
+
+    private static void saveNow()
+    {
+        if (BBSAddonsSettings.morphingDefaultCategory.getRoot() instanceof Settings settings)
+        {
+            settings.save();
         }
     }
 }
