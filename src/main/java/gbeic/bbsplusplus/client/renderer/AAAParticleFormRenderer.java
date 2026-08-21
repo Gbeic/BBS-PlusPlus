@@ -65,18 +65,14 @@ public class AAAParticleFormRenderer extends FormRenderer<AAAParticleForm> imple
         });
     }
 
-    private static class Source
+    /**
+     * @param blockEntityIdentity 只保存模型方块实例身份码，避免 Source 反向强引用实体导致 WeakHashMap 无法释放旧条目
+     */
+    private record Source(RegistryKey<World> worldKey, BlockPos pos, int blockEntityIdentity)
     {
-        public final RegistryKey<World> worldKey;
-        public final BlockPos pos;
-        /** 只保存模型方块实例身份码，避免 Source 反向强引用实体导致 WeakHashMap 无法释放旧条目 */
-        public final int blockEntityIdentity;
-
         public Source(World world, BlockPos pos, ModelBlockEntity modelBlock)
         {
-            this.worldKey = world.getRegistryKey();
-            this.pos = pos.toImmutable();
-            this.blockEntityIdentity = System.identityHashCode(modelBlock);
+            this(world.getRegistryKey(), pos.toImmutable(), System.identityHashCode(modelBlock));
         }
 
         public boolean isAlive(World world)
@@ -152,7 +148,7 @@ public class AAAParticleFormRenderer extends FormRenderer<AAAParticleForm> imple
     private int lastRenderTick = -1;
     private boolean filmWasPlaying = false;
     private boolean hadForm = false;
-    private Map<Integer, ParticleState> tickMemory = new LinkedHashMap<Integer, ParticleState>() {
+    private final Map<Integer, ParticleState> tickMemory = new LinkedHashMap<Integer, ParticleState>() {
         @Override
         protected boolean removeEldestEntry(Map.Entry<Integer, ParticleState> eldest) {
             return size() > 1000;

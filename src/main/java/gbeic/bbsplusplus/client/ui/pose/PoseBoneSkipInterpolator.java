@@ -1,7 +1,6 @@
 package gbeic.bbsplusplus.client.ui.pose;
 
 import mchorse.bbs_mod.utils.MathUtils;
-import mchorse.bbs_mod.utils.interps.IInterp;
 import mchorse.bbs_mod.utils.interps.Interpolation;
 import mchorse.bbs_mod.utils.interps.Interpolations;
 import mchorse.bbs_mod.utils.keyframes.Keyframe;
@@ -51,7 +50,7 @@ public class PoseBoneSkipInterpolator
         }
 
         @SuppressWarnings("unchecked")
-        List<Keyframe<Pose>> keyframes = (List<Keyframe<Pose>>) (List<?>) rawKeyframes;
+        List<Keyframe<Pose>> keyframes = (List<Keyframe<Pose>>) rawKeyframes;
 
         /* 插值结果是运行时临时值，不应该继续携带某个源关键帧的编辑元数据。 */
         PoseBoneSkipData.clear(result);
@@ -150,7 +149,7 @@ public class PoseBoneSkipInterpolator
                 getTransform(a.getValue(), bone),
                 getTransform(b.getValue(), bone),
                 getTransform(postB.getValue(), bone),
-                (IInterp) interpolation, x
+                    interpolation, x
             );
         }
 

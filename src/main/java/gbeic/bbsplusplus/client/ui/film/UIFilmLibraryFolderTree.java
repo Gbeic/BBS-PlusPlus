@@ -290,22 +290,7 @@ public class UIFilmLibraryFolderTree extends UIElement
         return false;
     }
 
-    private static class FolderRow
-    {
-        private final DataPath path;
-        private final int depth;
-        private final boolean hasChildren;
-        private final boolean root;
-        private final boolean background;
-
-        private FolderRow(DataPath path, int depth, boolean hasChildren, boolean root, boolean background)
-        {
-            this.path = path;
-            this.depth = depth;
-            this.hasChildren = hasChildren;
-            this.root = root;
-            this.background = background;
-        }
+    private record FolderRow(DataPath path, int depth, boolean hasChildren, boolean root, boolean background) {
     }
 
     /**
@@ -314,21 +299,21 @@ public class UIFilmLibraryFolderTree extends UIElement
     public interface Actions
     {
         /** 在指定文件夹中创建影片。 */
-        public void createFilm(DataPath folder);
+        void createFilm(DataPath folder);
 
         /** 在指定文件夹中创建子文件夹。 */
-        public void createFolder(DataPath folder);
+        void createFolder(DataPath folder);
 
         /** 重命名指定文件夹。 */
-        public void renameFolder(DataPath folder);
+        void renameFolder(DataPath folder);
 
         /** 删除指定文件夹。 */
-        public void deleteFolder(DataPath folder);
+        void deleteFolder(DataPath folder);
 
         /** 在系统资源管理器中打开指定文件夹。 */
-        public void openFolder(DataPath folder);
+        void openFolder(DataPath folder);
 
         /** 重新请求影片列表。 */
-        public void refresh();
+        void refresh();
     }
 }

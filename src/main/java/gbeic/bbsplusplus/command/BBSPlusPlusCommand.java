@@ -48,9 +48,8 @@ public class BBSPlusPlusCommand
         int triggerIndex = IntegerArgumentType.getInteger(context, "triggerIndex");
 
         BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof ModelBlockEntity)
+        if (be instanceof ModelBlockEntity modelBe)
         {
-            ModelBlockEntity modelBe = (ModelBlockEntity) be;
             if (modelBe.getProperties().getForm() instanceof AAAParticleForm)
             {
                 // 发送网络包通知客户端触发

@@ -12,5 +12,5 @@ public interface IFilmLibraryLayoutToggle
     /**
      * 根据当前设置开关同步影片库布局。
      */
-    public void bbspp$syncFilmLibraryLayout();
+    void bbspp$syncFilmLibraryLayout();
 }

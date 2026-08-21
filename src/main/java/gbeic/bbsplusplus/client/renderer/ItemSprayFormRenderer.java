@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -137,25 +136,24 @@ public class ItemSprayFormRenderer extends FormRenderer<ItemSprayForm> implement
     }
 
     // ==================== 发射源数据结构 ====================
-    static class Source
+    /**
+     * @param blockEntityIdentity 只保存模型方块实例身份码，避免 Source 反向强引用实体导致 WeakHashMap 无法释放旧条目
+     */
+    record Source(RegistryKey<World> worldKey, BlockPos pos, int blockEntityIdentity)
     {
-        public final RegistryKey<World> worldKey;
-        public final BlockPos pos;
-        /** 只保存模型方块实例身份码，避免 Source 反向强引用实体导致 WeakHashMap 无法释放旧条目 */
-        public final int blockEntityIdentity;
-
         public Source(World world, BlockPos pos, ModelBlockEntity modelBlock)
         {
-            this.worldKey = world.getRegistryKey();
-            this.pos = pos.toImmutable();
-            this.blockEntityIdentity = System.identityHashCode(modelBlock);
+            this(world.getRegistryKey(), pos.toImmutable(), System.identityHashCode(modelBlock));
         }
 
         public boolean isAlive(World world)
         {
             ModelBlockEntity modelBlock = this.getModelBlock(world);
 
-            if (modelBlock == null) return false;
+            if (modelBlock == null)
+            {
+                return false;
+            }
 
             try
             {
@@ -183,29 +181,6 @@ public class ItemSprayFormRenderer extends FormRenderer<ItemSprayForm> implement
             return null;
         }
 
-        @Override
-        public boolean equals(Object object)
-        {
-            if (this == object)
-            {
-                return true;
-            }
-
-            if (!(object instanceof Source source))
-            {
-                return false;
-            }
-
-            return this.blockEntityIdentity == source.blockEntityIdentity
-                && Objects.equals(this.worldKey, source.worldKey)
-                && Objects.equals(this.pos, source.pos);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(this.worldKey, this.pos, this.blockEntityIdentity);
-        }
     }
 
     /**

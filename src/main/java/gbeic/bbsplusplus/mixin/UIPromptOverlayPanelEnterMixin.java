@@ -31,12 +31,10 @@ public abstract class UIPromptOverlayPanelEnterMixin
     {
         Object self = this;
 
-        if (!(self instanceof UIPromptOverlayPanel))
+        if (!(self instanceof UIPromptOverlayPanel panel))
         {
             return;
         }
-
-        UIPromptOverlayPanel panel = (UIPromptOverlayPanel) self;
 
         if (panel.text != null && panel.text.isFocused() && context.isPressed(GLFW.GLFW_KEY_ENTER))
         {

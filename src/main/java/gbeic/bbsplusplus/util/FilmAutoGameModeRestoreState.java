@@ -299,21 +299,8 @@ public class FilmAutoGameModeRestoreState
      * 重新进入同一个上下文时，降低误切其它存档或服务器模式的风险。
      * </p>
      */
-    private static class PendingState
+    private record PendingState(UUID playerUuid, String worldKey, String originalGameMode, long createdAt)
     {
-        private final UUID playerUuid;
-        private final String worldKey;
-        private final String originalGameMode;
-        private final long createdAt;
-
-        private PendingState(UUID playerUuid, String worldKey, String originalGameMode, long createdAt)
-        {
-            this.playerUuid = playerUuid;
-            this.worldKey = worldKey;
-            this.originalGameMode = originalGameMode;
-            this.createdAt = createdAt;
-        }
-
         private boolean matches(MinecraftClient client)
         {
             return client.player != null

@@ -88,20 +88,10 @@ public class PoseBoneTreeMetadata
         }
     }
 
-    /** 单根骨骼在树形列表中的绘制信息。 */
-    public static class Meta
+    /**
+     * 单根骨骼在树形列表中的绘制信息。
+     */
+    public record Meta(int depth, int lines, boolean last, String label)
     {
-        public final int depth;
-        public final int lines;
-        public final boolean last;
-        public final String label;
-
-        public Meta(int depth, int lines, boolean last, String label)
-        {
-            this.depth = depth;
-            this.lines = lines;
-            this.last = last;
-            this.label = label;
-        }
     }
 }

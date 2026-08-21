@@ -96,9 +96,8 @@ public abstract class UIClipsDoubleClickMixin
         this.setSelected(clip);
 
         /* 通过工具类触发编辑器 */
-        if (this.delegate instanceof UIClipsPanel)
+        if (this.delegate instanceof UIClipsPanel clipsPanel)
         {
-            UIClipsPanel clipsPanel = (UIClipsPanel) this.delegate;
 
             /* 通过 Shadow 访问 UIClipsPanel 的私有 panel 字段 */
             UIClip<?> clipPanel = this.bbs_getPanel(clipsPanel);

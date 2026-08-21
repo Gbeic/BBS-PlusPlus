@@ -64,13 +64,12 @@ public class UIElementMixin
         UIContextMenu menu = cir.getReturnValue();
         
         // 拦截 UIFormCategory（包括 UIUserFormCategory）的右键菜单
-        if (menu instanceof UISimpleContextMenu && (Object) this instanceof UIFormCategory)
+        if (menu instanceof UISimpleContextMenu simpleMenu && (Object) this instanceof UIFormCategory)
         {
             if (!gbeic.bbsplusplus.BBSAddonsSettings.newMorphingPanel.get())
             {
                 return;
             }
-            UISimpleContextMenu simpleMenu = (UISimpleContextMenu) menu;
             List<ContextAction> actions = simpleMenu.actions.getList();
             
             // 移除原本用于“添加类别”、“重命名类别”、“移除类别”的三个选项

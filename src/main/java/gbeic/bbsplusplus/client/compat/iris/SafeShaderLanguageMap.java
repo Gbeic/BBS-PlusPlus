@@ -55,8 +55,7 @@ public final class SafeShaderLanguageMap
     }
 
     private static Map<String, String> collectUnsafe(String language)
-        throws ReflectiveOperationException, ClassNotFoundException
-    {
+        throws ReflectiveOperationException {
         Class<?> irisClass = Class.forName("net.irisshaders.iris.Iris");
         Optional<?> currentPack = (Optional<?>) irisClass.getMethod("getCurrentPack").invoke(null);
 

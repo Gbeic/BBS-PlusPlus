@@ -27,9 +27,7 @@ public class ClientPlayNetworkHandlerMixin
 
         if (text.contains("已将自己的游戏模式设置为")) return true;
         if (text.contains("Set own game mode to")) return true;
-        if (text.contains("ゲームモードを")) return true;
-
-        return false;
+        return text.contains("ゲームモードを");
     }
 
     @Inject(

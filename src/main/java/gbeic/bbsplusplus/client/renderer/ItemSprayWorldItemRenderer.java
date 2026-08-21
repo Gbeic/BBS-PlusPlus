@@ -245,25 +245,8 @@ final class ItemSprayWorldItemRenderer
         return frustum.isVisible(new Box(x - half, y - half, z - half, x + half, y + half, z + half));
     }
 
-    private static class RenderCandidate
+    private record RenderCandidate(ItemSprayFormRenderer.SprayedItem item, double x, double y, double z, float scale,
+                                   double distanceSq, long order)
     {
-        public final ItemSprayFormRenderer.SprayedItem item;
-        public final double x;
-        public final double y;
-        public final double z;
-        public final float scale;
-        public final double distanceSq;
-        public final long order;
-
-        public RenderCandidate(ItemSprayFormRenderer.SprayedItem item, double x, double y, double z, float scale, double distanceSq, long order)
-        {
-            this.item = item;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.scale = scale;
-            this.distanceSq = distanceSq;
-            this.order = order;
-        }
     }
 }

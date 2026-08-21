@@ -34,9 +34,8 @@ public class ActionPlayerMixin
                 // 尝试拿到 Replay
                 BaseValue replayValue = self.film.replays.get(replayId);
                 
-                if (replayValue instanceof Replay)
+                if (replayValue instanceof Replay replay)
                 {
-                    Replay replay = (Replay) replayValue;
                     Form form = replay.form.get();
                     
                     if (form != null)

@@ -342,16 +342,8 @@ public final class SettingsFileSanitizer
         }
     }
 
-    private static class ColorArray
+    private record ColorArray(LinkedHashSet<Integer> values, int originalSize)
     {
-        private final LinkedHashSet<Integer> values;
-        private final int originalSize;
-
-        private ColorArray(LinkedHashSet<Integer> values, int originalSize)
-        {
-            this.values = values;
-            this.originalSize = originalSize;
-        }
     }
 
     private static class RewriteResult

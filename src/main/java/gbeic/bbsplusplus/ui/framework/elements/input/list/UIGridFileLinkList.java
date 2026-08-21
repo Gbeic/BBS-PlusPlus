@@ -179,7 +179,7 @@ public class UIGridFileLinkList extends UIFileLinkList {
                 int index = row * columns + col;
                 if (index >= totalItems) break;
 
-                FileLink element = (FileLink) getElementAt(index);
+                FileLink element = getElementAt(index);
                 if (element != null) {
                     int listIndex = this.list.indexOf(element);
                     this.renderGridElement(context, element, listIndex, col, row, y);
@@ -191,7 +191,7 @@ public class UIGridFileLinkList extends UIFileLinkList {
     /**
      * 渲染网格布局中的单个文件项
      */
-    private mchorse.bbs_mod.ui.framework.elements.UIElement tooltipElement = new mchorse.bbs_mod.ui.framework.elements.UIElement();
+    private final mchorse.bbs_mod.ui.framework.elements.UIElement tooltipElement = new mchorse.bbs_mod.ui.framework.elements.UIElement();
 
     private void renderGridElement(UIContext context, FileLink element, int index, int col, int row, int y) {
         int s = getGridSize();
@@ -329,7 +329,7 @@ public class UIGridFileLinkList extends UIFileLinkList {
         // 当处于子文件夹时，拦截 ESC 键用于返回上一级目录
         if (this.escapeGoBackEnabled && context.isPressed(GLFW.GLFW_KEY_ESCAPE)) {
             if (this.path != null && (!this.path.path.isEmpty() || !this.path.source.isEmpty())) {
-                FileLink parent = (FileLink) getElementAt(0);
+                FileLink parent = getElementAt(0);
                 if (parent != null && parent.folder && parent.title.equals("..")) {
                     // 必须传 false 禁用 fastForward，并应用“自动向后跳过”逻辑
                     Link target = getFastBackwardLink(parent.link);

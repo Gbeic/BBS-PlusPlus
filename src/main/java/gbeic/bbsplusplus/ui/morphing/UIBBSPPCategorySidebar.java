@@ -27,15 +27,15 @@ import java.util.function.Consumer;
 public class UIBBSPPCategorySidebar extends UIElement
 {
     public UIScrollView scroll;
-    private UIDraggable resizer;
+    private final UIDraggable resizer;
 
     private int width = 120;
-    private int minWidth = 80;
-    private int maxWidth = 300;
+    private final int minWidth = 80;
+    private final int maxWidth = 300;
 
-    private List<CategoryItem> items = new ArrayList<>();
+    private final List<CategoryItem> items = new ArrayList<>();
     public CategoryItem selected;
-    private Consumer<CategoryItem> callback;
+    private final Consumer<CategoryItem> callback;
 
     public UIBBSPPCategorySidebar(Consumer<CategoryItem> callback)
     {

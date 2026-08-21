@@ -34,7 +34,7 @@ public class UIPoseEditorBoneTreeMixin
     @Inject(method = "fillGroups(Ljava/util/Collection;Z)V", at = @At("HEAD"), remap = false)
     private void bbspp$clearPoseBoneHierarchy(Collection<String> groups, boolean reset, CallbackInfo ci)
     {
-        ((IPoseBoneTreeList) (Object) this.groups.list).bbspp$setBoneHierarchy(null, null);
+        ((IPoseBoneTreeList) this.groups.list).bbspp$setBoneHierarchy(null, null);
     }
 
     /**
@@ -50,7 +50,7 @@ public class UIPoseEditorBoneTreeMixin
     private void bbspp$setPoseBoneHierarchy(IModel model, Map<String, String> flippedParts, boolean reset,
                                              Collection<String> disabledBones, CallbackInfo ci)
     {
-        ((IPoseBoneTreeList) (Object) this.groups.list).bbspp$setBoneHierarchy(
+        ((IPoseBoneTreeList) this.groups.list).bbspp$setBoneHierarchy(
             model,
             (bone) -> PoseBones.isHidden(disabledBones, bone)
         );

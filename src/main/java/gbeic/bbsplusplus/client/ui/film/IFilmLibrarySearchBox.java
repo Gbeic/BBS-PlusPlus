@@ -9,5 +9,5 @@ package gbeic.bbsplusplus.client.ui.film;
 public interface IFilmLibrarySearchBox
 {
     /** 启用影片库搜索框的 Esc 清空行为。 */
-    public void bbspp$setFilmLibrarySearchBox(boolean enabled);
+    void bbspp$setFilmLibrarySearchBox(boolean enabled);
 }

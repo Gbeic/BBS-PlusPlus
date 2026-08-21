@@ -388,16 +388,10 @@ public class StructureFormRenderer extends FormRenderer<StructureForm>
         return state.with(property, (T) value);
     }
 
-    /** 结构里的一个方块：状态 + 相对坐标 */
-    private static class BlockEntry
+    /**
+     * 结构里的一个方块：状态 + 相对坐标
+     */
+    private record BlockEntry(BlockState state, BlockPos pos)
     {
-        final BlockState state;
-        final BlockPos pos;
-
-        BlockEntry(BlockState state, BlockPos pos)
-        {
-            this.state = state;
-            this.pos = pos;
-        }
     }
 }

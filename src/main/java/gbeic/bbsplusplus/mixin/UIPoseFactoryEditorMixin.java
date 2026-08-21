@@ -5,7 +5,6 @@ import gbeic.bbsplusplus.client.ui.pose.IPoseParameterBrushHost;
 import gbeic.bbsplusplus.client.ui.pose.PoseBoneSkipData;
 import gbeic.bbsplusplus.client.ui.pose.PoseParameterBrushState;
 import mchorse.bbs_mod.l10n.L10n;
-import mchorse.bbs_mod.l10n.keys.IKey;
 import mchorse.bbs_mod.ui.Keys;
 import mchorse.bbs_mod.ui.framework.elements.IUIElement;
 import mchorse.bbs_mod.ui.framework.elements.UIElement;
@@ -62,7 +61,7 @@ public abstract class UIPoseFactoryEditorMixin implements IPoseParameterBrush
 
         this.bbspp$parameterBrushButton = new UIIcon(this::bbspp$getParameterBrushIcon,
             (button) -> this.bbspp$handleParameterBrushButton());
-        this.bbspp$parameterBrushButton.tooltip((IKey) this::bbspp$getParameterBrushTooltip);
+        this.bbspp$parameterBrushButton.tooltip(this::bbspp$getParameterBrushTooltip);
         this.bbspp$parameterBrushButton.activeColor(Colors.opaque(Colors.GREEN));
         this.bbspp$parameterBrushButton.active(this.bbspp$isParameterBrushArmed());
 

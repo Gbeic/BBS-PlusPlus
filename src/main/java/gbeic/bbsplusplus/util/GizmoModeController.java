@@ -37,12 +37,4 @@ public class GizmoModeController
 
         Gizmo.INSTANCE.setMode(target);
     }
-
-    /**
-     * 获取保存的上一个模式。
-     */
-    public static Gizmo.Mode getPreviousMode()
-    {
-        return previousMode;
-    }
 }

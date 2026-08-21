@@ -28,9 +28,9 @@ public class UIAudioTreeList extends UILikeableStringList
 {
     private static final String PATH_PREFIX = "assets:audio/";
 
-    private Map<String, TreeEntry> treeData = new HashMap<>();
-    private Set<String> expandedFolders = new HashSet<>();
-    private List<String> audioPaths = new ArrayList<>();
+    private final Map<String, TreeEntry> treeData = new HashMap<>();
+    private final Set<String> expandedFolders = new HashSet<>();
+    private final List<String> audioPaths = new ArrayList<>();
     private boolean includeNone;
 
     private UILikeableStringListAccessor acc;
@@ -141,7 +141,7 @@ public class UIAudioTreeList extends UILikeableStringList
 
                 if (!isLast)
                 {
-                    String dirPath = currentPath.toString() + "/";
+                    String dirPath = currentPath + "/";
                     TreeNode dirNode = nodeMap.get(dirPath);
                     if (dirNode == null)
                     {

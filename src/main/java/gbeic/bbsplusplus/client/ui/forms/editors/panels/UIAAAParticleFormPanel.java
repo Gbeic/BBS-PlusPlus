@@ -126,14 +126,7 @@ public class UIAAAParticleFormPanel extends UIFormPanel<AAAParticleForm>
     {
         gbeic.bbsplusplus.client.ui.utils.UIEffectPicker.open(this.getContext(), (link) ->
         {
-            if (link != null)
-            {
-                this.form.effect.set(link);
-            }
-            else
-            {
-                this.form.effect.set(null);
-            }
+            this.form.effect.set(link);
         });
     }
 

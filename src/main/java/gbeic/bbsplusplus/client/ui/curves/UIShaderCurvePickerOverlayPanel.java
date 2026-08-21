@@ -57,9 +57,9 @@ public class UIShaderCurvePickerOverlayPanel extends UIOverlayPanel
     private final ToggleCallback callback;
 
     private TreeNode current;
-    private UILabel path;
-    private UITextbox search;
-    private UIShaderCurveEntryList entries;
+    private final UILabel path;
+    private final UITextbox search;
+    private final UIShaderCurveEntryList entries;
 
     public UIShaderCurvePickerOverlayPanel(Collection<String> existing, ToggleCallback callback)
     {

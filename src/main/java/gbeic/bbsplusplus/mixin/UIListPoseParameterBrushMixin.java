@@ -87,14 +87,12 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     {
         this.bbspp$boneNameTooltipCandidate = null;
 
-        if (!bbspp$isPoseBoneTreeEnabled() || !((Object) this instanceof UIPoseBoneStringList))
+        if (!bbspp$isPoseBoneTreeEnabled() || !((Object) this instanceof UIPoseBoneStringList self))
         {
             this.bbspp$boneTreeRenderIndent = bbspp$BONE_TREE_INDENT;
 
             return;
         }
-
-        UIList<?> self = (UIList<?>) (Object) this;
 
         if (this.bbspp$boneTreeFlat || self.isFiltering())
         {
@@ -118,14 +116,14 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
 
             PoseBoneTreeMetadata.Meta meta = this.bbspp$boneTreeMetadata.get(bone);
 
-            if (meta == null || meta.depth <= 0)
+            if (meta == null || meta.depth() <= 0)
             {
                 continue;
             }
 
-            int preferredNameWidth = Math.min(font.getWidth(meta.label), preferredMaximumNameWidth);
+            int preferredNameWidth = Math.min(font.getWidth(meta.label()), preferredMaximumNameWidth);
             int availableForIndent = self.area.w - rightInset - 4 - preferredNameWidth;
-            int candidate = availableForIndent / meta.depth;
+            int candidate = availableForIndent / meta.depth();
 
             indent = Math.min(indent, candidate);
         }
@@ -143,16 +141,15 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
                                           boolean hover, boolean selected, CallbackInfo ci)
     {
         if (!bbspp$isPoseBoneTreeEnabled()
-            || !((Object) this instanceof UIPoseBoneStringList)
+            || !((Object) this instanceof UIPoseBoneStringList self)
             || !(element instanceof String bone))
         {
             return;
         }
 
-        UIList<?> self = (UIList<?>) (Object) this;
         boolean flat = this.bbspp$boneTreeFlat || self.isFiltering();
         PoseBoneTreeMetadata.Meta meta = flat ? null : this.bbspp$boneTreeMetadata.get(bone);
-        int depth = meta == null ? 0 : meta.depth;
+        int depth = meta == null ? 0 : meta.depth();
         int rowHeight = self.scroll.scrollItemSize;
 
         if (meta != null && depth > 0)
@@ -162,7 +159,7 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
 
             for (int level = 0; level < depth - 1; level++)
             {
-                if ((meta.lines & (1 << level)) != 0)
+                if ((meta.lines() & (1 << level)) != 0)
                 {
                     int lineX = bbspp$boneTreeColumnX(x, level, this.bbspp$boneTreeRenderIndent);
 
@@ -172,11 +169,11 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
 
             int lineX = bbspp$boneTreeColumnX(x, depth - 1, this.bbspp$boneTreeRenderIndent);
 
-            context.batcher.box(lineX, y, lineX + 1, meta.last ? middleY + 1 : y + rowHeight, bbspp$BONE_TREE_GUIDE_COLOR);
+            context.batcher.box(lineX, y, lineX + 1, meta.last() ? middleY + 1 : y + rowHeight, bbspp$BONE_TREE_GUIDE_COLOR);
             context.batcher.box(lineX + 1, middleY, textX - 2, middleY + 1, bbspp$BONE_TREE_GUIDE_COLOR);
         }
 
-        String label = meta == null ? bone : meta.label;
+        String label = meta == null ? bone : meta.label();
         int color = hover ? Colors.HIGHLIGHT : Colors.WHITE;
         int textX = x + 4 + depth * this.bbspp$boneTreeRenderIndent;
         int textY = y + (rowHeight - context.batcher.getFont().getHeight()) / 2;
@@ -201,13 +198,11 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     @Inject(method = "render", at = @At("TAIL"), remap = false)
     private void bbspp$showTruncatedPoseBoneName(UIContext context, CallbackInfo ci)
     {
-        if (!bbspp$isPoseBoneTreeEnabled() || !((Object) this instanceof UIPoseBoneStringList)
+        if (!bbspp$isPoseBoneTreeEnabled() || !((Object) this instanceof UIPoseBoneStringList self)
             || this.bbspp$boneNameTooltipCandidate == null)
         {
             return;
         }
-
-        UIList<?> self = (UIList<?>) (Object) this;
 
         this.bbspp$boneNameTooltipAnchor.area.set(self.area.x, this.bbspp$boneNameTooltipY,
             self.area.w, self.scroll.scrollItemSize);
@@ -223,12 +218,11 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     @Inject(method = "subMouseClicked", at = @At("HEAD"), cancellable = true, remap = false)
     private void bbspp$togglePoseBoneFromStateDiamond(UIContext context, CallbackInfoReturnable<Boolean> cir)
     {
-        if (!((Object) this instanceof UIPoseBoneStringList) || context.mouseButton != 0)
+        if (!((Object) this instanceof UIPoseBoneStringList self) || context.mouseButton != 0)
         {
             return;
         }
 
-        UIList<?> self = (UIList<?>) (Object) this;
         int markerX = self.area.ex() - 12;
 
         if (!self.area.isInside(context) || context.mouseX < markerX - 7 || context.mouseX > markerX + 7)
@@ -259,12 +253,10 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     @Inject(method = "subMouseScrolled", at = @At("HEAD"), cancellable = true, remap = false)
     private void bbspp$acceleratePoseBoneWheel(UIContext context, CallbackInfoReturnable<Boolean> cir)
     {
-        if (!((Object) this instanceof UIPoseBoneStringList) || context.mouseWheel == 0D)
+        if (!((Object) this instanceof UIPoseBoneStringList self) || context.mouseWheel == 0D)
         {
             return;
         }
-
-        UIList<?> self = (UIList<?>) (Object) this;
 
         /* 只有关键帧 Pose 编辑器存在参数刷宿主，普通表单 Pose 列表保持原版速度。 */
         if (!self.area.isInside(context) || !self.scroll.hasScrollbar() || this.bbspp$findParameterBrush() == null)
@@ -343,7 +335,7 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
     private void bbspp$renderPoseBoneState(UIContext context, T element, int index, int x, int y,
                                            boolean hover, boolean selected, CallbackInfo ci)
     {
-        if (!((Object) this instanceof UIPoseBoneStringList) || !(element instanceof String bone))
+        if (!((Object) this instanceof UIPoseBoneStringList self) || !(element instanceof String bone))
         {
             return;
         }
@@ -355,7 +347,6 @@ public abstract class UIListPoseParameterBrushMixin<T> implements IPoseBoneTreeL
             return;
         }
 
-        UIList<?> self = (UIList<?>) (Object) this;
         int markerX = x + self.area.w - 12;
         int brushIconX = markerX - 16;
         int markerY = y + self.scroll.scrollItemSize / 2;

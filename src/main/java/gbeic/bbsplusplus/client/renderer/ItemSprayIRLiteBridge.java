@@ -606,26 +606,12 @@ final class ItemSprayIRLiteBridge
 
     /**
      * IR Lights 阴影烘焙用的物品喷射批次。
-     *
+     * <p>
      * IRL 的投影物槽位很少，不能让每个喷射物品都单独占一个槽。这里把同一批空间上相近的物品塞进一个
      * caster，让 IRL 用一个包围球做灯光裁剪，真正绘制时再一次性画出批次里的所有物品。
      */
-    private static final class IRLiteShadowCaster
+    private record IRLiteShadowCaster(List<IRLiteShadowItem> items, double x, double y, double z, float radius)
     {
-        public final List<IRLiteShadowItem> items;
-        public final double x;
-        public final double y;
-        public final double z;
-        public final float radius;
-
-        private IRLiteShadowCaster(List<IRLiteShadowItem> items, double x, double y, double z, float radius)
-        {
-            this.items = items;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.radius = radius;
-        }
     }
 
     /**

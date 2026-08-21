@@ -140,12 +140,10 @@ public class BBSPlusPlusModClient implements ClientModInitializer
                 if (client.world != null)
                 {
                     BlockEntity be = client.world.getBlockEntity(pos);
-                    if (be instanceof ModelBlockEntity)
+                    if (be instanceof ModelBlockEntity modelBe)
                     {
-                        ModelBlockEntity modelBe = (ModelBlockEntity) be;
-                        if (modelBe.getProperties().getForm() instanceof AAAParticleForm)
+                        if (modelBe.getProperties().getForm() instanceof AAAParticleForm aaaForm)
                         {
-                            AAAParticleForm aaaForm = (AAAParticleForm) modelBe.getProperties().getForm();
                             if (triggerIndex >= 0 && triggerIndex < aaaForm.manualTriggerPulse.length)
                             {
                                 aaaForm.manualTriggerPulse[triggerIndex] = true;

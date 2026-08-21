@@ -14,47 +14,47 @@ import java.util.Collection;
 public interface IFilmLibraryPathList
 {
     /** 标记该列表由影片库使用，启用完整路径显示、路径搜索和排序偏好。 */
-    public void bbspp$setFilmLibraryMode(boolean enabled);
+    void bbspp$setFilmLibraryMode(boolean enabled);
 
     /** @return 当前列表是否启用了新版影片库模式。 */
-    public boolean bbspp$isFilmLibraryMode();
+    boolean bbspp$isFilmLibraryMode();
 
     /** 按名称或完整路径过滤影片，空字符串则恢复当前文件夹列表。 */
-    public void bbspp$filterFilmLibrary(String query);
+    void bbspp$filterFilmLibrary(String query);
 
     /** 设置名称排序方向。 */
-    public void bbspp$setFilmLibrarySortDescending(boolean descending);
+    void bbspp$setFilmLibrarySortDescending(boolean descending);
 
     /** @return 当前是否按名称降序排列。 */
-    public boolean bbspp$isFilmLibrarySortDescending();
+    boolean bbspp$isFilmLibrarySortDescending();
 
     /** 显示全部影片，右侧列表不显示文件夹。 */
-    public void bbspp$showAllFilmLibraryFilms();
+    void bbspp$showAllFilmLibraryFilms();
 
     /** 显示指定文件夹直属影片，子文件夹只在左侧树中呈现。 */
-    public void bbspp$showFilmLibraryFolder(DataPath folder);
+    void bbspp$showFilmLibraryFolder(DataPath folder);
 
     /** @return 影片仓库中的所有文件夹路径。 */
-    public Collection<DataPath> bbspp$getFilmLibraryFolders();
+    Collection<DataPath> bbspp$getFilmLibraryFolders();
 
     /** @return 当前右侧列表是否处于全部影片视图。 */
-    public boolean bbspp$isShowingAllFilmLibraryFilms();
+    boolean bbspp$isShowingAllFilmLibraryFilms();
 
     /** @return 当前右侧列表对应的文件夹。 */
-    public DataPath bbspp$getFilmLibraryFolder();
+    DataPath bbspp$getFilmLibraryFolder();
 
     /** 设置刷新后需要自动选中的影片 ID。 */
-    public void bbspp$selectFilmLibraryAfterRefresh(String id);
+    void bbspp$selectFilmLibraryAfterRefresh(String id);
 
     /** @return 指定文件夹是否没有直属或嵌套的影片/子文件夹。 */
-    public boolean bbspp$isFilmLibraryFolderEmpty(DataPath folder);
+    boolean bbspp$isFilmLibraryFolderEmpty(DataPath folder);
 
     /** 记录一个文件夹路径，避免原版刷新漏掉刚被清空的空文件夹。 */
-    public void bbspp$rememberFilmLibraryFolder(DataPath folder);
+    void bbspp$rememberFilmLibraryFolder(DataPath folder);
 
     /** 移除已知文件夹及其子文件夹，通常用于真实删除文件夹后同步左侧树。 */
-    public void bbspp$forgetFilmLibraryFolder(DataPath folder);
+    void bbspp$forgetFilmLibraryFolder(DataPath folder);
 
     /** 文件夹重命名后同步已知文件夹缓存。 */
-    public void bbspp$renameKnownFilmLibraryFolder(DataPath folder, String name);
+    void bbspp$renameKnownFilmLibraryFolder(DataPath folder, String name);
 }

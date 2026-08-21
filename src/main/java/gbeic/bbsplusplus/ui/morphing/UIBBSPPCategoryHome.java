@@ -21,8 +21,8 @@ import java.util.function.Consumer;
  */
 public class UIBBSPPCategoryHome extends UIScrollView
 {
-    private Consumer<FormCategory> callback;
-    private List<CategoryCard> cards = new ArrayList<>();
+    private final Consumer<FormCategory> callback;
+    private final List<CategoryCard> cards = new ArrayList<>();
     
     public UIBBSPPCategoryHome(Consumer<FormCategory> callback)
     {

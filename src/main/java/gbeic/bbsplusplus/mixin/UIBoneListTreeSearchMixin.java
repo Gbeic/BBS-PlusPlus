@@ -38,6 +38,6 @@ public class UIBoneListTreeSearchMixin
     {
         boolean flat = !this.search.getText().trim().isEmpty();
 
-        ((IPoseBoneTreeList) (Object) this.list).bbspp$setBoneTreeFlat(flat);
+        ((IPoseBoneTreeList) this.list).bbspp$setBoneTreeFlat(flat);
     }
 }

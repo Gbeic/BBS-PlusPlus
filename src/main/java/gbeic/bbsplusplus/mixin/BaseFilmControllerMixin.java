@@ -99,11 +99,9 @@ public abstract class BaseFilmControllerMixin {
 
     @Inject(method = "updateEndWorld", at = @At("TAIL"), remap = false)
     public void onUpdateEndWorld(CallbackInfo ci) {
-        if (!((Object) this instanceof FirstPersonFilmController)) {
+        if (!((Object) this instanceof FirstPersonFilmController wfc)) {
             return;
         }
-        
-        mchorse.bbs_mod.film.WorldFilmController wfc = (mchorse.bbs_mod.film.WorldFilmController) (Object) this;
 
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
