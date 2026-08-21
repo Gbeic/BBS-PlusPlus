@@ -107,7 +107,8 @@
         "IrisUtilsMixin",
         "UIKeyframeDopeSheetTrackHeightScrollMixin",
         "UIKeyframeGraphSelectedScrollMixin",
-        "UIKeyframesLayoutLockMixin"
+        "UIKeyframesLayoutLockMixin",
+        "UIChalkboardMixin"
     ],
     "injectors": {
         "defaultRequire": 1
