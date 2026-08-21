@@ -35,7 +35,7 @@ import net.fabricmc.loader.api.FabricLoader;
 /**
  * BBS++ 客户端入口点。
  * <p>
- * 负责注册 AAA 粒子表单的渲染器、UI 编辑器面板和特效加载器。
+ * 目的是把客户端相关的初始化逻辑都放在这里，避免 {@link BBSPlusPlusMod} 里堆积过多客户端代码。
  * </p>
  */
 public class BBSPlusPlusModClient implements ClientModInitializer

@@ -30,13 +30,12 @@ public class BBSPlusPlusMod implements ModInitializer, BBSAddonMod
         StructureStickRegistry.register();
         StructureStickNetworking.registerServer();
         this.registerKeyframeTrackExtensions();
+        CommandRegistrationCallback.EVENT.register(BBSPlusPlusCommand::register);
 
 
         if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("aaa_particles"))
         {
             gbeic.bbsplusplus.keyframes.BBSPlusPlusKeyframeFactories.register();
-
-            CommandRegistrationCallback.EVENT.register(BBSPlusPlusCommand::register);
         }
         // 注意：AAA 粒子表单由 BBSModMixin 在 BBSMod.onInitialize() TAIL 中注册，
         // 此处不做注册是因为 BBSMod.getForms() 此时尚未初始化。

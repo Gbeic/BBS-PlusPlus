@@ -1,6 +1,6 @@
 package gbeic.bbsplusplus.mixin.shadercurves;
 
-import gbeic.bbsplusplus.BBSPlusPlusMod;
+import gbeic.bbsplusplus.client.compat.shadercurves.ShaderCurveDebug;
 import mchorse.bbs_mod.client.BBSRendering;
 import mchorse.bbs_mod.utils.iris.ShaderCurves;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,10 +53,6 @@ public class ShaderCurvesMixin
 
     @Shadow(remap = false)
     public static Map<String, ShaderCurves.ShaderVariable> variableMap;
-
-    /** 光影曲线源码筛选诊断开关，仅在需要分析新光影包兼容性时临时开启 */
-    @Unique
-    private static volatile boolean BBSPP$DEBUG_SHADER_CURVE_PATCHES = false;
 
     /** 避免同一段 shader 源码在一次运行中重复刷屏 */
     @Unique
@@ -166,7 +162,7 @@ public class ShaderCurvesMixin
     @Inject(method = "processSource", at = @At("RETURN"), remap = false)
     private static void bbspp$logShaderCurveVariableMap(String source, CallbackInfoReturnable<String> cir)
     {
-        if (!BBSPP$DEBUG_SHADER_CURVE_PATCHES || variableMap == null)
+        if (!ShaderCurveDebug.isShaderCurvePatches() || variableMap == null)
         {
             return;
         }
@@ -176,9 +172,10 @@ public class ShaderCurvesMixin
         if (!names.equals(BBSPP$LAST_LOGGED_VARIABLE_MAP))
         {
             BBSPP$LAST_LOGGED_VARIABLE_MAP = names;
-            BBSPlusPlusMod.LOGGER.info("[BBS++ 光影曲线排查] 当前已注册、会被 BBS 曲线系统改写为 uniform 的光影参数 {} 个：{}",
-                names.size(),
-                bbspp$formatNames(names));
+            ShaderCurveDebug.log("当前已注册、会被 BBS 曲线系统改写为 uniform 的光影参数 "
+                + names.size()
+                + " 个："
+                + bbspp$formatNames(names));
         }
     }
 
@@ -504,7 +501,7 @@ public class ShaderCurvesMixin
         Collection<String> finalNames
     )
     {
-        if (!BBSPP$DEBUG_SHADER_CURVE_PATCHES || parsedNames.isEmpty())
+        if (!ShaderCurveDebug.isShaderCurvePatches() || parsedNames.isEmpty())
         {
             return;
         }
@@ -523,26 +520,24 @@ public class ShaderCurvesMixin
         notSlider.removeAll(preprocessorBacked);
         notSlider.removeAll(finalNames);
 
-        BBSPlusPlusMod.LOGGER.info(
-            "[BBS++ 光影曲线排查] 源码片段 hash={}：候选={} 个，最终改写={} 个，非滑条跳过={} 个，顶层 const 关联且仍改写={} 个，预处理跳过={} 个",
-            hash,
-            parsedNames.size(),
-            finalNames.size(),
-            notSlider.size(),
-            constBacked.size(),
-            preprocessorBacked.size()
-        );
+        ShaderCurveDebug.log("源码片段 hash=" + hash
+            + "：候选=" + parsedNames.size()
+            + " 个，最终改写=" + finalNames.size()
+            + " 个，非滑条跳过=" + notSlider.size()
+            + " 个，顶层 const 关联且仍改写=" + constBacked.size()
+            + " 个，预处理跳过=" + preprocessorBacked.size()
+            + " 个");
 
-        BBSPlusPlusMod.LOGGER.info("[BBS++ 光影曲线排查] hash={} 最终改写：{}", hash, bbspp$formatNames(finalNames));
+        ShaderCurveDebug.log("hash=" + hash + " 最终改写：" + bbspp$formatNames(finalNames));
 
         if (!constBacked.isEmpty())
         {
-            BBSPlusPlusMod.LOGGER.info("[BBS++ 光影曲线排查] hash={} 顶层 const 关联且仍改写：{}", hash, bbspp$formatNames(constBacked));
+            ShaderCurveDebug.log("hash=" + hash + " 顶层 const 关联且仍改写：" + bbspp$formatNames(constBacked));
         }
 
         if (!preprocessorBacked.isEmpty())
         {
-            BBSPlusPlusMod.LOGGER.info("[BBS++ 光影曲线排查] hash={} 预处理跳过：{}", hash, bbspp$formatNames(preprocessorBacked));
+            ShaderCurveDebug.log("hash=" + hash + " 预处理跳过：" + bbspp$formatNames(preprocessorBacked));
         }
     }
 
