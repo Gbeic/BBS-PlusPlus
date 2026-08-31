@@ -115,8 +115,8 @@
 
 ## 开源许可
 
-- 本项目以 **GNU LGPL-3.0-or-later** 许可证开源，完整许可证文本见 [LICENSE](LICENSE)
-- 你可以自由使用、学习、修改和分发本项目，修改后的衍生作品需同样遵循 LGPL-3.0 及其后续版本开源
+- 本项目以 **MIT** 许可证开源，完整许可证文本见 [LICENSE](LICENSE)
+- 你可以自由使用、学习、修改和分发本项目
 - 版权所有 (C) Gbeic
 - 本项目是 [BBSFS](https://github.com/Wemppy4/bbs-fs) 的扩展插件，通过 Mixin 实现增强
 
